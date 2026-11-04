@@ -1,0 +1,278 @@
+/* Component selectors are scoped to gennix-video. */
+gennix-video {
+  display: block;
+  position: relative;
+  isolation: isolate;
+  box-sizing: border-box;
+  min-width: 0;
+  width: min(var(--gv-attr-width, var(--gv-width, 100%)), 100%);
+  max-width: var(--gv-max-width, 100%);
+  height: var(--gv-attr-height, var(--gv-height, auto));
+  min-height: var(--gv-min-height, 0px);
+  max-height: var(--gv-limited-height, var(--gv-max-height, none));
+  aspect-ratio: var(--gv-container-ratio, 1.777777778);
+  overflow: hidden;
+  background: var(--gv-background-color, #151b21);
+  color: #fff;
+  font-family: inherit;
+}
+gennix-video[template="hero"] { height: var(--gv-attr-height, var(--gv-height, 32rem)); }
+/* Use the parent width and the declared ratio unless an explicit limit is set. */
+gennix-video[size="fullwidth"],
+gennix-video:not([size]):not([template="hero"]) {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  min-height: 0;
+  max-height: var(--gv-limited-height, none);
+}
+gennix-video[size="viewport"] {
+  width: 100%;
+  max-width: 100%;
+  height: max(0px, calc(100vh - var(--gv-attr-viewport-offset, var(--gv-viewport-offset, 0px))));
+}
+@supports (height: 100dvh) {
+  gennix-video[size="viewport"] { height: max(0px, calc(100dvh - var(--gv-attr-viewport-offset, var(--gv-viewport-offset, 0px)))); }
+}
+
+/* Subtract the offset from the limit, not from the ratio-derived height. */
+gennix-video[max-height] {
+  min-height: 0;
+  --gv-limited-height: max(0px, calc(var(--gv-attr-max-height) - var(--gv-attr-viewport-offset, 0px)));
+}
+gennix-video[background="none"] { background: transparent; }
+gennix-video *, gennix-video *::before, gennix-video *::after { box-sizing: border-box; }
+gennix-video [hidden] { display: none !important; }
+gennix-video .gv-background {
+  display: none;
+  position: absolute;
+  inset: calc(-2 * var(--gv-blur, 20px) - 2px);
+  background-size: cover;
+  background-position: var(--gv-poster-position, center);
+  filter: blur(var(--gv-blur, 20px));
+  pointer-events: none;
+}
+gennix-video[template="hero"]:not([background]) .gv-background,
+gennix-video[size="custom"]:not([background]) .gv-background,
+gennix-video[size="viewport"]:not([background]) .gv-background,
+gennix-video[background="poster"] .gv-background { display: block; }
+gennix-video .gv-background::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / var(--gv-dim, 35%));
+}
+gennix-video .gv-poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: var(--gv-poster-fit, cover);
+  object-position: var(--gv-poster-position, center);
+}
+gennix-video[data-gv-active] .gv-poster { visibility: hidden; }
+gennix-video .gv-stage {
+  position: absolute;
+  inset: 0;
+  container-type: size;
+  display: grid;
+  place-items: center;
+}
+gennix-video .gv-player {
+  display: block;
+  width: min(100cqw, calc(100cqh * var(--gv-ratio, 1.777777778)));
+  height: min(100cqh, calc(100cqw / var(--gv-ratio, 1.777777778)));
+  border: 0;
+  object-fit: contain;
+  background: #000;
+  visibility: hidden;
+}
+gennix-video[data-gv-active] .gv-player { visibility: visible; }
+/* Cover is native-only: never crop a YouTube iframe. */
+gennix-video[provider="native"][fit="cover"] .gv-player {
+  width: 100cqw;
+  height: 100cqh;
+  min-width: 0;
+  min-height: 0;
+  object-fit: cover;
+  object-position: var(--gv-video-position, center);
+}
+gennix-video .gv-play {
+  z-index: 2;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: .8rem;
+  min-height: 3.6rem;
+  padding: var(--gv-button-padding, 1rem 1.5rem);
+  border: var(--gv-button-border, 1px solid rgb(255 255 255 / 50%));
+  border-radius: var(--gv-attr-button-radius, var(--gv-button-radius, 100px));
+  background: var(--gv-attr-button-background, var(--gv-button-background, #fff));
+  color: var(--gv-attr-button-color, var(--gv-button-color, #172026));
+  font: 600 var(--gv-button-font-size, 1rem)/1.2 system-ui, sans-serif;
+  cursor: pointer;
+  box-shadow: 0 4px 32px #0004;
+}
+gennix-video .gv-play:hover {
+  background: var(--gv-attr-button-hover-background, var(--gv-button-hover-background, #e3f5a4));
+  color: var(--gv-attr-button-hover-color, var(--gv-button-hover-color, #172026));
+}
+gennix-video .gv-play:focus-visible {
+  background: var(--gv-attr-button-focus-background, var(--gv-button-focus-background, #e3f5a4));
+  color: var(--gv-attr-button-focus-color, var(--gv-button-focus-color, #172026));
+}
+gennix-video .gv-play:focus-visible, gennix-video .gv-player:focus-visible {
+  outline: 3px solid #c7f56b;
+  outline-offset: -5px;
+}
+gennix-video .gv-play[aria-disabled="true"] { cursor: wait; opacity: .8; }
+gennix-video .gv-play:disabled { cursor: not-allowed; opacity: .55; }
+gennix-video .gv-play-icon {
+  width: 0;
+  height: 0;
+  border-top: calc(var(--gv-button-icon-size, 12px) / 2) solid transparent;
+  border-bottom: calc(var(--gv-button-icon-size, 12px) / 2) solid transparent;
+  border-left: calc(var(--gv-button-icon-size, 12px) * .833333) solid currentColor;
+}
+gennix-video .gv-toolbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 4px 8px;
+  background: #151b21;
+}
+gennix-video .gv-fullscreen {
+  min-height: 40px;
+  padding: .5rem 1rem;
+  border: 1px solid #9aa8af;
+  border-radius: 4px;
+  background: #151b21;
+  color: #fff;
+  font: 500 .875rem system-ui, sans-serif;
+  cursor: pointer;
+}
+gennix-video .gv-fullscreen:focus-visible { outline: 3px solid #c7f56b; outline-offset: -3px; }
+gennix-video .gv-fullscreen:disabled { opacity: .5; cursor: not-allowed; }
+
+/* Close overlays the container without reducing the available video height. */
+gennix-video[data-gv-close] .gv-stage { top: 0px; }
+gennix-video .gv-close {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  z-index: 3;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #151b2100;
+  color: #fff;
+  font: 400 26px/1 system-ui, sans-serif;
+  cursor: pointer;
+}
+gennix-video .gv-close:hover { background: #151b21; }
+gennix-video .gv-close:focus-visible { outline: 3px solid #c7f56b; outline-offset: -3px; }
+gennix-video[data-gv-fullscreen] .gv-stage { bottom: 48px; }
+gennix-video[data-gv-fullscreen] .gv-play { top: calc(50% - 24px); }
+gennix-video[data-gv-fullscreen] .gv-status { bottom: 60px; }
+/* Full screen overrides all configured size modes. */
+gennix-video:fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  max-width: none !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  background-color: #151b21;
+}
+gennix-video .gv-status {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 2rem);
+  margin: 0;
+  padding: .65rem 1rem;
+  border-radius: .4rem;
+  background: #111e;
+  color: #fff;
+  font: 500 .875rem/1.5 system-ui, sans-serif;
+  text-align: center;
+}
+/* Keep status messages from covering active player controls. */
+gennix-video[data-gv-active] .gv-status {
+  position: static;
+  transform: none;
+  width: auto;
+  max-width: none;
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Demo styles apply only inside .gv-demo. */
+.gv-demo { margin: 0; background: #f5f4ef; color: #1e292d; font-family: system-ui, sans-serif; }
+.gv-demo * { box-sizing: border-box; }
+.gv-demo a { color: inherit; text-underline-offset: .2em; }
+.gv-demo .gv-demo-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.3rem 4vw; border-bottom: 1px solid #d9dcd3; }
+.gv-demo .gv-demo-brand { font-size: 1.1rem; font-weight: 750; letter-spacing: -.04em; }
+.gv-demo .gv-demo-badge { padding: .4rem .7rem; border: 1px solid #c6ccbf; border-radius: 2rem; font-size: .72rem; letter-spacing: .09em; text-transform: uppercase; }
+.gv-demo .gv-demo-intro { padding: 3.5rem 4vw 2.5rem; max-width: 72rem; }
+.gv-demo .gv-demo-eyebrow { margin: 0 0 1rem; color: #58674a; font-size: .75rem; font-weight: 650; letter-spacing: .15em; text-transform: uppercase; }
+.gv-demo h1 { margin: 0 0 1rem; max-width: 16ch; font-size: clamp(2.4rem, 5vw, 4.6rem); line-height: 1.05; letter-spacing: -.055em; font-weight: 600; }
+.gv-demo .gv-demo-lead { max-width: 43rem; margin: 0; color: #586368; font-size: 1.05rem; line-height: 1.7; }
+.gv-demo .gv-demo-hero { --gv-height: 32rem; }
+.gv-demo .gv-demo-caption { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem 2rem; padding: 1rem 4vw; border-bottom: 1px solid #d9dcd3; color: #586368; font-size: .8rem; }
+.gv-demo .gv-demo-section { padding: 3rem 4vw; }
+.gv-demo h2 { margin: 0 0 .7rem; font-size: clamp(1.5rem, 3vw, 2rem); letter-spacing: -.035em; font-weight: 600; }
+.gv-demo .gv-demo-section > p { max-width: 48rem; line-height: 1.7; color: #586368; margin-bottom: 1.6rem; }
+.gv-demo .gv-demo-native { --gv-height: 28rem; }
+.gv-demo .gv-demo-secondary { max-width: 42rem; --gv-height: 25rem; }
+.gv-demo .gv-demo-checks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin: 2rem 0 0; padding: 0; list-style: none; }
+.gv-demo .gv-demo-checks li { border-top: 1px solid #b9c2b1; padding-top: 1rem; line-height: 1.6; color: #586368; }
+.gv-demo .gv-demo-checks strong { display: block; color: #1e292d; margin-bottom: .4rem; }
+.gv-demo .gv-demo-footer { padding: 1.5rem 4vw; border-top: 1px solid #d9dcd3; display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: .85rem; }
+.gv-demo .gv-demo-tools { display: flex; flex-wrap: wrap; gap: .6rem; margin: 1rem 0; }
+.gv-demo .gv-demo-tools button, .gv-demo .gv-demo-tools select { padding: .7rem 1rem; border: 1px solid #a5b19c; border-radius: .4rem; background: #fff; color: #1e292d; font: inherit; cursor: pointer; }
+.gv-demo .gv-demo-tools button:hover { background: #e3f5a4; }
+.gv-demo .gv-demo-tools :focus-visible { outline: 3px solid #52751f; outline-offset: 3px; }
+.gv-demo .gv-demo-log { max-height: 16rem; overflow: auto; padding: 1rem 1rem 1rem 2.8rem; border: 1px solid #d9dcd3; border-radius: .4rem; font: .85rem/1.6 ui-monospace, monospace; overflow-wrap: anywhere; }
+.gv-demo .gv-demo-result { min-height: 1.5rem; color: #445e33; }
+.gv-demo .gv-demo-test { --gv-height: 20rem; --gv-max-width: 48rem; }
+.gv-demo .gv-demo-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
+.gv-demo .gv-demo-grid article { min-width: 0; }
+.gv-demo .gv-demo-table { overflow-x: auto; }
+.gv-demo table { width: 100%; border-collapse: collapse; font-size: .9rem; line-height: 1.5; }
+.gv-demo caption { text-align: left; font-weight: 600; padding: 1rem 0; }
+.gv-demo th, .gv-demo td { padding: .8rem; text-align: left; vertical-align: top; border-bottom: 1px solid #c6ccbf; }
+.gv-demo thead { background: #eeeee6; }
+.gv-demo th code { white-space: nowrap; }
+.gv-demo .gv-demo-grid p { line-height: 1.6; color: #586368; }
+.gv-demo pre { padding: 1rem; overflow-x: auto; border: 1px solid #c6ccbf; border-radius: .4rem; background: #eeeee6; font: .9rem/1.6 ui-monospace, monospace; }
+.gv-demo .gv-demo-portrait { --gv-height: 30rem; }
+.gv-demo .gv-demo-square { --gv-poster-fit: contain; }
+.gv-demo .gv-demo-cover { --gv-height: 20rem; --gv-poster-fit: contain; }
+.gv-demo .gv-demo-viewport-header { height: 80px; padding: 0 4vw; display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: #f5f4ef; }
+@media (max-width: 600px) {
+  .gv-demo table, .gv-demo tbody, .gv-demo tr, .gv-demo th, .gv-demo td { display: block; }
+  .gv-demo caption { display: block; }
+  .gv-demo thead { display: none; }
+  .gv-demo tr { padding: .8rem 0; border-bottom: 1px solid #c6ccbf; }
+  .gv-demo th, .gv-demo td { border: 0; padding: .3rem 0; overflow-wrap: anywhere; }
+  .gv-demo td:nth-child(2)::before { content: 'Default: '; font-weight: 600; }
+  .gv-demo .gv-demo-intro { padding-top: 2.5rem; }
+  .gv-demo .gv-demo-hero { --gv-height: 26rem; }
+  .gv-demo .gv-demo-native, .gv-demo .gv-demo-secondary { --gv-height: 25rem; }
+  .gv-demo .gv-demo-checks { grid-template-columns: 1fr; gap: 1rem; }
+  .gv-demo .gv-demo-grid { grid-template-columns: 1fr; }
+}

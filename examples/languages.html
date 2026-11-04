@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>gennix-video · Languages</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../src/gennix-video.css">
+<script src="../src/gennix-video.js" defer></script>
+</head>
+<body class="gv-demo">
+<header class="gv-demo-header"><strong>gennix-video</strong><a href="index.html">Configuration guide</a><span class="gv-demo-badge">0.1.0</span></header>
+<main><div class="gv-demo-intro"><h1>One button.<br>Your languages.</h1><p>This page never creates or modifies cookies. The selector changes lang. Missing translations use playlabel, then the internal English default Play.</p><div class="gv-demo-tools"><label for="language">Language</label><select id="language"><option value="en-US">English (US)</option><option value="en-GB">English (GB)</option><option value="es">Spanish</option><option value="fr">French</option><option value="it">Italian</option><option value="de">German</option><option value="pt">Portuguese (no translation)</option></select><button id="reset">Back to poster</button></div></div><section class="gv-demo-section"><h2>Explicit language</h2><p>Regional attributes take precedence, followed by the base language and default text. Translation values intentionally retain their own language.</p><pre><code>&lt;gennix-video id=&quot;translated&quot; lang=&quot;en-US&quot; size=&quot;fullwidth&quot; max-height=&quot;55dvh&quot; background=&quot;poster&quot;
+  provider=&quot;native&quot; src=&quot;assets/sample.mp4&quot; poster=&quot;assets/sample-poster.jpg&quot; fullscreen=&quot;true&quot;
+  playlabel=&quot;Watch video&quot; playlabel-en=&quot;Play&quot; playlabel-en-us=&quot;Watch now&quot;
+  playlabel-es=&quot;Reproducir&quot; playlabel-fr=&quot;Lire&quot; playlabel-it=&quot;Riproduci&quot; playlabel-de=&quot;Abspielen&quot;
+  loadinglabel-fr=&quot;Chargement…&quot; retrylabel-fr=&quot;Réessayer&quot; errorlabel-fr=&quot;Lecture impossible.&quot;
+  fullscreenlabel-fr=&quot;Plein écran&quot; exitfullscreenlabel-fr=&quot;Quitter le plein écran&quot;&gt;&lt;/gennix-video&gt;</code></pre><gennix-video id="translated" lang="en-US" size="fullwidth" max-height="55dvh" background="poster"
+  provider="native" src="assets/sample.mp4" poster="assets/sample-poster.jpg" fullscreen="true"
+  playlabel="Watch video" playlabel-en="Play" playlabel-en-us="Watch now"
+  playlabel-es="Reproducir" playlabel-fr="Lire" playlabel-it="Riproduci" playlabel-de="Abspielen"
+  loadinglabel-fr="Chargement…" retrylabel-fr="Réessayer" errorlabel-fr="Lecture impossible."
+  fullscreenlabel-fr="Plein écran" exitfullscreenlabel-fr="Quitter le plein écran"></gennix-video></section><section class="gv-demo-section"><h2>Read an existing site cookie</h2><p>Only SETLANG is read here, if available to JavaScript on this domain/path. A missing cookie or translation falls back to Watch video. No cookie is written.</p><pre><code>&lt;gennix-video id=&quot;cookie-video&quot; lang-cookie=&quot;SETLANG&quot; size=&quot;fullwidth&quot; max-height=&quot;300&quot; provider=&quot;native&quot; src=&quot;assets/sample.mp4&quot; poster=&quot;assets/sample-poster.jpg&quot; playlabel=&quot;Watch video&quot; playlabel-en=&quot;Play&quot; playlabel-es=&quot;Reproducir&quot; playlabel-fr=&quot;Lire&quot;&gt;&lt;/gennix-video&gt;</code></pre><gennix-video id="cookie-video" lang-cookie="SETLANG" size="fullwidth" max-height="300" provider="native" src="assets/sample.mp4" poster="assets/sample-poster.jpg" playlabel="Watch video" playlabel-en="Play" playlabel-es="Reproducir" playlabel-fr="Lire"></gennix-video></section><section class="gv-demo-section"><div class="gv-demo-tools"><button id="refresh">Read the existing cookie again</button></div><pre><code>// After your website changes its own language cookie:
+document.getElementById(&#x27;cookie-video&#x27;).refreshLanguage();</code></pre></section><section class="gv-demo-section"><h2>No configured label</h2><p>Without a translated or base playlabel, the generated button says Play.</p><pre><code>&lt;gennix-video provider=&quot;native&quot; src=&quot;assets/sample.mp4&quot; poster=&quot;assets/sample-poster.jpg&quot; max-height=&quot;240&quot;&gt;&lt;/gennix-video&gt;</code></pre><gennix-video provider="native" src="assets/sample.mp4" poster="assets/sample-poster.jpg" max-height="240"></gennix-video></section></main>
+<footer class="gv-demo-footer"><a href="../README.md">README</a><a href="../tests/">Browser tests</a><span>All rights reserved.</span></footer>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+const video = document.getElementById('translated');
+document.getElementById('language').onchange = event => video.setAttribute('lang', event.target.value);
+document.getElementById('reset').onclick = () => video.reset();
+document.getElementById('refresh').onclick = () => document.getElementById('cookie-video').refreshLanguage();
+});
+</script>
+</body>
+</html>

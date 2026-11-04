@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>gennix-video · Browser tests</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../src/gennix-video.css">
+  <script src="../src/gennix-video.js" defer></script>
+</head>
+<body class="gv-demo">
+  <main class="gv-demo-section">
+    <p class="gv-demo-eyebrow">Automated browser tests</p>
+    <h1>Behavior and recovery.</h1>
+    <p>Tests use local media and an intentional missing-file error. No YouTube connection is required. Keep this tab active until completion.</p>
+    <div class="gv-demo-tools"><button type="button" id="run">Run tests</button></div>
+    <p id="summary" role="status">Not started.</p>
+    <ol id="results" class="gv-demo-log"></ol>
+    <div id="fixture"></div>
+    <p><a href="../examples/">Back to examples</a></p>
+  </main>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const run = document.querySelector('#run');
+      const fixture = document.querySelector('#fixture');
+      const results = document.querySelector('#results');
+      const summary = document.querySelector('#summary');
+      const assert = (value, message) => { if (!value) throw new Error(message); };
+      const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+      const until = async (check) => {
+        const deadline = Date.now() + 8000;
+        while (!check()) {
+          if (Date.now() > deadline) throw new Error('Timed out waiting for the expected condition.');
+          await wait(25);
+        }
+      };
+      const rejection = async (promise, name) => {
+        const error = await promise.then(() => null, value => value);
+        assert(error && (!name || error.name === name), 'Expected rejection ' + (name || 'from a real error'));
+        return error;
+      };
+      function create(provider = 'native', src = '../examples/assets/sample.mp4', attributes = {}, button = null) {
+        const video = document.createElement('gennix-video');
+        video.className = 'gv-demo-test';
+        video.setAttribute('provider', provider);
+        video.setAttribute('src', src);
+        video.setAttribute('poster', '../examples/assets/sample-poster.jpg');
+        video.setAttribute('aria-label', 'Test instance');
+        for (const [name, value] of Object.entries(attributes)) video.setAttribute(name, value);
+        if (button) video.append(button);
+        fixture.append(video);
+        return video;
+      }
+      run.addEventListener('click', async () => {
+        run.disabled = true;
+        results.replaceChildren();
+        let passed = 0;
+        let failed = 0;
+        const test = async (name, body) => {
+          summary.textContent = 'Checking: ' + name;
+          const row = document.createElement('li');
+          let timeout;
+          try {
+            await Promise.race([body(), new Promise((_, reject) => {
+              timeout = setTimeout(() => reject(new Error('The test exceeded 12 seconds.')), 12000);
+            })]);
+            row.textContent = 'OK · ' + name;
+            passed++;
+          } catch (error) {
+            row.textContent = 'ERROR · ' + name + ': ' + error.message;
+            failed++;
+          } finally { clearTimeout(timeout); fixture.replaceChildren(); }
+          results.append(row);
+        };
+        await test('Idle pause does not load YouTube; disconnected play rejects', async () => {
+          const video = create('youtube', 'HuACikeyg0c');
+          video.pause();
+          assert(video.state === 'idle' && !video.querySelector('iframe'), 'The player was activated.');
+          assert(![...document.scripts].some(s => s.src.includes('youtube.com')), 'The API was loaded.');
+          video.remove();
+          await rejection(video.play(), 'InvalidStateError');
+        });
+        await test('Repeated activations share one promise, video and play event', async () => {
+          const video = create();
+          const seen = [];
+          let bubbled = false;
+          for (const name of ['ready', 'play']) video.addEventListener('gennix:' + name, e => seen.push(e.type));
+          fixture.addEventListener('gennix:play', e => { bubbled = e.detail.provider === 'native' && e.detail.state === 'playing'; }, {once:true});
+          const first = video.play();
+          assert(first === video.play(), 'Promises are not shared.');
+          await first;
+          assert(video.state === 'playing' && video.querySelector('video').currentTime >= 0, 'Playback has not started.');
+          assert(video.querySelectorAll('video').length === 1, 'Duplicate videos.');
+          assert(seen.join(',') === 'gennix:ready,gennix:play' && bubbled, 'Incorrect event order, duplication or bubbling.');
+          await video.play();
+          assert(seen.length === 2, 'play() duplicated an event while already playing.');
+        });
+        await test('Pause and resume preserve the player without repeating ready', async () => {
+          const video = create();
+          let ready = 0, pauses = 0, plays = 0;
+          video.addEventListener('gennix:ready', () => ready++);
+          video.addEventListener('gennix:pause', () => pauses++);
+          video.addEventListener('gennix:play', () => plays++);
+          await video.play();
+          const player = video.querySelector('video');
+          video.pause();
+          await until(() => video.state === 'paused');
+          video.pause();
+          await video.play();
+          assert(video.querySelector('video') === player && ready === 1 && plays === 2 && pauses === 1, 'Incorrect events or player instance.');
+        });
+        await test('Reset cancels pending loading and allows playback again', async () => {
+          const video = create();
+          const pending = rejection(video.play(), 'AbortError');
+          video.reset();
+          await pending;
+          assert(video.state === 'idle' && !video.querySelector('video'), 'Reset did not release resources.');
+          await video.play();
+          assert(video.state === 'playing', 'Playback did not restart.');
+        });
+        await test('Pause during loading cancels without reactivation', async () => {
+          const video = create();
+          const pending = rejection(video.play(), 'AbortError');
+          video.pause();
+          await pending;
+          await wait(100);
+          assert(video.state === 'idle' && !video.querySelector('video'), 'A cancelled load was reactivated.');
+        });
+        await test('Disconnect cancels loading; reconnect does not duplicate structure', async () => {
+          const video = create();
+          const pending = rejection(video.play(), 'AbortError');
+          video.remove();
+          await pending;
+          fixture.append(video);
+          await video.play();
+          assert(video.querySelectorAll('.gv-stage').length === 1 && video.querySelectorAll('.gv-play').length === 1 && video.querySelectorAll('video').length === 1, 'Duplicate structure.');
+          video.remove();
+          fixture.append(video);
+          await video.play();
+          assert(video.state === 'playing', 'Incorrect reconnection after playback.');
+        });
+        await test('Real errors stay isolated and retry works after correcting the source', async () => {
+          const good = create();
+          const bad = create('native', 'archivo-inexistente.mp4');
+          let errors = 0;
+          let detail;
+          bad.addEventListener('gennix:error', e => { errors++; detail = e.detail; });
+          await good.play();
+          await rejection(bad.play());
+          assert(bad.state === 'error' && errors === 1 && detail.error.message && detail.error.code, 'Expected one useful error.');
+          assert(good.state === 'playing', 'The error affected another instance.');
+          assert(!bad.querySelector('video') && bad.querySelector('.gv-play').textContent.includes('Retry'), 'Resources remain or retry is unavailable.');
+          bad.setAttribute('src', '../examples/assets/sample.mp4');
+          await bad.play();
+          assert(bad.state === 'playing' && errors === 1, 'Retry failed.');
+        });
+        await test('Simulated playback rejection preserves controls without claiming playback', async () => {
+          const originalPlay = HTMLMediaElement.prototype.play;
+          const video = create();
+          let plays = 0;
+          video.addEventListener('gennix:play', () => plays++);
+          try {
+            HTMLMediaElement.prototype.play = function () {
+              return Promise.reject(new DOMException('Simulated rejection for this test.', 'NotAllowedError'));
+            };
+            await rejection(video.play(), 'NotAllowedError');
+            await until(() => video.state === 'ready');
+            assert(plays === 0 && video.querySelector('video').controls && video.hasAttribute('data-gv-active'), 'Incorrect state or controls after rejection.');
+          } finally { HTMLMediaElement.prototype.play = originalPlay; }
+          await video.play();
+          assert(plays === 1 && video.state === 'playing', 'Playback did not recover after rejection.');
+        });
+        await test('Real completion emits ended once and preserves the player', async () => {
+          const video = create();
+          let ended = 0;
+          video.addEventListener('gennix:ended', () => ended++);
+          await video.play();
+          const player = video.querySelector('video');
+          player.currentTime = player.duration - .2;
+          await until(() => video.state === 'ended');
+          assert(ended === 1 && video.querySelector('video') === player, 'Incorrect completion.');
+          await video.play();
+          assert(video.state === 'playing', 'Cannot replay after completion.');
+        });
+        await test('Including the script twice does not register the element again', async () => {
+          const registered = customElements.get('gennix-video');
+          await new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = '../src/gennix-video.js';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.append(script);
+          });
+          assert(customElements.get('gennix-video') === registered, 'The registration changed.');
+          const video = create();
+          await video.play();
+        });
+        const rect = element => element.getBoundingClientRect();
+        const near = (a, b) => Math.abs(a - b) < 1;
+        await test('Inline reserves 16:9 and keeps its height during playback', async () => {
+          const video = create();
+          video.removeAttribute('class');
+          const before = rect(video);
+          assert(Math.abs(before.width / before.height - 16/9) < .01, 'Inline ratio was not reserved.');
+          await video.play();
+          assert(near(before.height, rect(video).height), 'Activation shifts the content.');
+        });
+        await test('Portrait metadata fits both dimensions without changing the hero', async () => {
+          const video = create('native', '../examples/assets/portrait.mp4', {template:'hero'});
+          const before = rect(video);
+          await video.play();
+          const host = rect(video.querySelector('.gv-stage')), player = rect(video.querySelector('video'));
+          assert(near(rect(video).height, before.height), 'Metadata changed the hero height.');
+          assert(player.width <= host.width + 1 && player.height <= host.height + 1, 'The video does not fit.');
+          assert(Math.abs(player.width / player.height - 9/16) < .01, 'Incorrect portrait ratio.');
+          assert(near(player.left-host.left, host.right-player.right) && near(player.top-host.top, host.bottom-player.bottom), 'The video is not centered.');
+        });
+        await test('Declared square reserves 1:1 before and after playback', async () => {
+          const video = create('native', '../examples/assets/square.mp4', {'aspect-ratio':'1/1'});
+          video.removeAttribute('class');
+          video.style.setProperty('--gv-max-width','320px');
+          const before = rect(video);
+          await video.play();
+          assert(near(before.width, before.height) && near(before.height, rect(video).height), 'Incorrect square reservation.');
+        });
+        await test('Custom width respects its parent and height limits', async () => {
+          const video = create('native', '../examples/assets/sample.mp4', {size:'custom'});
+          video.removeAttribute('class');
+          fixture.style.width = '250px';
+          video.style.cssText = '--gv-width:900px;--gv-height:500px;--gv-max-height:220px;--gv-max-width:400px';
+          try {
+            assert(near(rect(video).width,250) && near(rect(video).height,220), 'Limits were not respected.');
+            fixture.style.width = '210px';
+            assert(near(rect(video).width,210), 'Does not fit the parent.');
+          } finally { fixture.style.width = ''; }
+        });
+        await test('Viewport subtracts the header without requesting full screen', async () => {
+          const video = create('native', '../examples/assets/sample.mp4', {size:'viewport','viewport-offset':'64'});
+          video.removeAttribute('class');
+          assert(near(rect(video).height, innerHeight-64), 'Incorrect header offset.');
+          assert(!document.fullscreenElement, 'Full screen was requested.');
+        });
+        await test('Native cover fills the stage and allows a contained poster', async () => {
+          const video = create('native', '../examples/assets/portrait.mp4', {template:'hero',fit:'cover',background:'solid'});
+          video.style.setProperty('--gv-poster-fit','contain');
+          assert(getComputedStyle(video.querySelector('img')).objectFit === 'contain', 'Poster is not contained.');
+          assert(getComputedStyle(video.querySelector('.gv-background')).display === 'none', 'Solid background shows an image.');
+          await video.play();
+          const host = rect(video.querySelector('.gv-stage')), player = rect(video.querySelector('video'));
+          assert(near(host.width,player.width) && near(host.height,player.height), 'Cover does not fill the stage.');
+        });
+        await test('Fullwidth fills the parent and recalculates height from aspect-ratio', async () => {
+          const video = create('native', '../examples/assets/sample.mp4', {size:'fullwidth','aspect-ratio':'16/9',width:'540',height:'540'});
+          fixture.style.width = '960px';
+          video.style.setProperty('--gv-max-width','540px');
+          try {
+            assert(near(rect(video).width,960) && near(rect(video).height,540), '16/9 does not use the full width.');
+            video.setAttribute('aspect-ratio','4/3');
+            assert(near(rect(video).width,960) && near(rect(video).height,720), '4/3 does not recalculate height.');
+            fixture.style.width = '320px';
+            assert(near(rect(video).width,320) && near(rect(video).height,240), 'Does not adapt to a narrow viewport.');
+          } finally { fixture.style.width = ''; }
+        });
+        await test('Custom supports numbers, auto and changes without reloading video', async () => {
+          const video = create('native', '../examples/assets/sample.mp4', {size:'custom',width:'900',height:'500'});
+          video.removeAttribute('class');
+          fixture.style.width = '1000px';
+          try {
+            assert(near(rect(video).width,900) && near(rect(video).height,500), 'Incorrect numeric dimensions.');
+            await video.play();
+            const player = video.querySelector('video');
+            video.setAttribute('width','640');
+            video.setAttribute('height','auto');
+            assert(near(rect(video).width,640) && near(rect(video).height,360), 'Incorrect automatic height.');
+            video.setAttribute('width','100%');
+            fixture.style.width = '320px';
+            assert(near(rect(video).width,320) && near(rect(video).height,180), 'Percentage width does not adapt.');
+            assert(video.querySelector('video') === player, 'Resizing recreated the player.');
+          } finally { fixture.style.width = ''; }
+        });
+        await test('Invalid sizes show an error and allow correction', async () => {
+          const video = create('native', '../examples/assets/sample.mp4', {size:'custom',width:'-900',height:'500'});
+          assert(video.state === 'error', 'Accepted a negative width.');
+          video.setAttribute('width','900');
+          await video.play();
+          assert(video.state === 'playing', 'Did not recover after correcting configuration.');
+        });
+        await test('YouTube URL formats, times and explicit start priority', async () => {
+          for (const source of ['https://www.youtube.com/watch?v=HuACikeyg0c&t=1m30s', 'https://youtu.be/HuACikeyg0c?t=90', 'https://www.youtube.com/embed/HuACikeyg0c?start=90', 'https://youtube.com/shorts/HuACikeyg0c#t=90']) {
+            const video = create('youtube', source);
+            assert(video.state === 'idle' && video._src === 'HuACikeyg0c' && video._start === 90, 'Incorrect URL or time parsing.');
+            video.remove();
+          }
+          const explicit = create('youtube','https://youtu.be/HuACikeyg0c?t=90',{start:'0'});
+          assert(explicit._start === 0, 'Explicit start did not take priority.');
+          assert(!document.querySelector('iframe'), 'Parsing a URL created an iframe.');
+        });
+        await test('Rejects deceptive hosts, invalid IDs and invalid times', async () => {
+          for (const source of ['https://youtube.com.ejemplo.org/watch?v=HuACikeyg0c','https://youtube.com@ejemplo.org/watch?v=HuACikeyg0c','javascript:alert(1)','https://youtu.be/incorrecto','https://youtube.com/watch?v=HuACikeyg0c&t=mal']) {
+            const video = create('youtube',source);
+            assert(video.state === 'error', 'Accepted an invalid source: ' + source);
+            video.remove();
+          }
+        });
+        await test('False booleans do not enable autoplay, mute or loop', async () => {
+          const video = create('native','../examples/assets/sample.mp4',{controls:'false',muted:'false',loop:'false',autoplay:'false',playsinline:'false'});
+          await wait(50);
+          assert(video.state === 'idle' && !video.querySelector('video'), 'Autoplay false loads the video.');
+          await video.play();
+          const player = video.querySelector('video');
+          assert(!player.controls && !player.muted && !player.loop && !player.playsInline, 'Boolean false was interpreted as true.');
+        });
+        await test('Empty values enable; unknown values use defaults', async () => {
+          const video = create('native','../examples/assets/sample.mp4',{controls:'desconocido',muted:'',loop:'true',preload:'metadata'});
+          await video.play();
+          const player = video.querySelector('video');
+          assert(player.controls && player.muted && player.loop && player.preload === 'metadata', 'Incorrect booleans or preload.');
+        });
+        await test('Native start uses the requested position', async () => {
+          const video = create('native','../examples/assets/sample.mp4',{start:'3'});
+          await video.play();
+          assert(video.querySelector('video').currentTime >= 3 && video.querySelector('video').currentTime < 5, 'Incorrect native start.');
+        });
+        await test('Explicit muted autoplay starts real playback', async () => {
+          const video = create('native','../examples/assets/sample.mp4',{autoplay:'true',muted:'true'});
+          await until(() => video.state === 'playing');
+          assert(video.querySelector('video').muted, 'Autoplay did not preserve the requested mute.');
+        });
+        await test('Disabling Play loads controls without starting playback', async () => {
+          const video = create('native','../examples/assets/sample.mp4',{'play-button':'false',controls:'true'});
+          await until(() => video.state === 'ready');
+          assert(video.querySelector('video').paused && video.querySelector('video').controls && video.querySelector('.gv-play').hidden, 'Manual access is missing without a button.');
+          await video.play();
+          video.reset();
+          assert(!video.querySelector('.gv-play').hidden, 'Reset left no manual action.');
+        });
+        await test('Rejects disabling both button and controls without an alternative', async () => {
+          const video = create('native','../examples/assets/sample.mp4',{'play-button':'false',controls:'false'});
+          assert(video.state === 'error', 'Accepted an inaccessible configuration.');
+        });
+        await test('Custom button preserves content and activates through the same button', async () => {
+          const button = document.createElement('button');
+          button.setAttribute('data-gv-play','');
+          const text = document.createElement('strong');
+          text.textContent = 'Watch my video';
+          button.append(text);
+          const video = create('native','../examples/assets/sample.mp4',{},button);
+          assert(video.querySelectorAll('.gv-play').length === 1 && button.firstElementChild === text, 'Button replaced or duplicated.');
+          button.click();
+          await until(() => video.state === 'playing');
+          video.reset();
+          assert(button.firstElementChild === text && button.textContent === 'Watch my video' && !button.hidden, 'Reset changed custom content.');
+        });
+        await test('Poster click activates only when enabled', async () => {
+          const video = create('native','../examples/assets/sample.mp4',{'poster-click':'true'});
+          video.querySelector('.gv-stage').click();
+          await until(() => video.state === 'playing');
+          const disabled = create();
+          disabled.querySelector('.gv-stage').click();
+          assert(disabled.state === 'idle', 'Poster click is enabled by default.');
+        });
+        await test('Coordination pauses others only after playback actually starts', async () => {
+          const first = create();
+          const second = create('native','../examples/assets/sample.mp4',{'pause-others':'true'});
+          await first.play();
+          assert(first.state === 'playing', 'An idle instance paused another.');
+          await second.play();
+          await until(() => first.state === 'paused');
+          assert(second.state === 'playing', 'The starting instance was not preserved.');
+        });
+        await test('Completion can restore the poster after emitting ended', async () => {
+          const video = create('native','../examples/assets/sample.mp4',{'on-end':'poster'});
+          let ended = 0;
+          video.addEventListener('gennix:ended', () => ended++);
+          await video.play();
+          const player = video.querySelector('video');
+          player.currentTime = player.duration - .2;
+          await until(() => video.state === 'idle');
+          assert(ended === 1 && !video.querySelector('video') && !video.querySelector('.gv-play').hidden, 'Did not restore the poster correctly.');
+        });
+        await test('Native loop repeats and takes precedence over poster reset', async () => {
+          const video = create('native','../examples/assets/sample.mp4',{loop:'true','on-end':'poster'});
+          await video.play();
+          const player = video.querySelector('video');
+          player.currentTime = player.duration - .2;
+          await until(() => player.currentTime < 1);
+          assert(video.querySelector('video') === player && !player.paused, 'Loop did not repeat.');
+        });
+        await test('Blocked autoplay with hidden controls retains a manual button', async () => {
+          const original = HTMLMediaElement.prototype.play;
+          let video;
+          try {
+            HTMLMediaElement.prototype.play = () => Promise.reject(new DOMException('Test rejection','NotAllowedError'));
+            video = create('native','../examples/assets/sample.mp4',{autoplay:'true',controls:'false'});
+            await until(() => video.state === 'ready');
+            assert(!video.querySelector('.gv-play').hidden, 'No manual action available.');
+          } finally { HTMLMediaElement.prototype.play = original; }
+          video.querySelector('.gv-play').click();
+          await until(() => video.state === 'playing');
+        });
+        await test('Attributes configure button colors, text and icon', async () => {
+          const video = create('native','../examples/assets/sample.mp4',{'button-background':'#123456','button-color':'#ffffff','button-radius':'8',playlabel:'Watch now','play-content':'text'});
+          const button = video.querySelector('.gv-play');
+          assert(getComputedStyle(button).backgroundColor === 'rgb(18, 52, 86)' && getComputedStyle(button).borderRadius === '8px', 'Incorrect button style.');
+          assert(button.textContent === 'Watch now' && video.querySelector('.gv-play-icon').hidden, 'Incorrect text or icon.');
+        });
+        await test('Maximum height keeps width, limits video and updates without replacement', async () => {
+          const video = create('native', '../examples/assets/sample.mp4', {size:'fullwidth','max-height':'100', 'background':'poster'});
+          const width = video.getBoundingClientRect().width;
+          assert(Math.abs(video.getBoundingClientRect().height - Math.min(width * 9 / 16, 100)) < 1, 'Limit was not applied.');
+          await video.play();
+          const player = video.querySelector('video');
+          assert(player.getBoundingClientRect().height <= 101 && player.getBoundingClientRect().width <= width + 1, 'Video overflows.');
+          video.setAttribute('viewport-offset', '20');
+          assert(Math.abs(video.getBoundingClientRect().height - 80) < 1, 'Offset was not subtracted from the limit.');
+          video.setAttribute('max-height', '10dvh');
+          assert(Math.abs(video.getBoundingClientRect().height - Math.max(0, Math.min(width * 9 / 16, innerHeight * .1 - 20))) < 1, 'dvh was not applied.');
+          video.removeAttribute('max-height');
+          assert(Math.abs(video.getBoundingClientRect().height - width * 9 / 16) < 1 && video.querySelector('video') === player, 'Size not restored or video recreated.');
+        });
+        await test('Maximum height validates units and allows recovery', async () => {
+          const video = create('native', '../examples/assets/sample.mp4', {'max-height':'-20vh'});
+          assert(video.state === 'error', 'Accepted a negative maximum.');
+          video.setAttribute('max-height', '200px');
+          await video.play();
+          assert(video.state === 'playing' && video.getBoundingClientRect().height <= 201, 'Did not recover the height limit.');
+        });
+        await test('Regional, base and internal language fallback without playlabel', async () => {
+          const video = create('native', '../examples/assets/sample.mp4', {lang:'en_US', 'playlabel-en-us':'Watch', 'playlabel-en':'Play', playlabel:'Ver'});
+          const label = () => video.querySelector('.gv-play').textContent;
+          assert(label() === 'Watch', 'Regional translation not resolved.');
+          video.removeAttribute('playlabel-en-us'); video.refreshLanguage();
+          assert(label() === 'Play', 'Base language not resolved.');
+          video.setAttribute('lang', 'fr');
+          assert(label() === 'Ver', 'Base attribute not used.');
+          video.removeAttribute('playlabel');
+          assert(label() === 'Play', 'Internal default is missing.');
+          assert(!video.querySelector('video'), 'Translation loaded a player.');
+        });
+        await test('Existing cookie: exact read, decoding and missing values without writes', async () => {
+          const descriptor = Object.getOwnPropertyDescriptor(document, 'cookie');
+          let value = 'OTHER=en; SITE_LANG=en%5FUS';
+          let writes = 0;
+          Object.defineProperty(document, 'cookie', { configurable:true, get:()=>value, set:()=>writes++ });
+          try {
+            const video = create('native', '../examples/assets/sample.mp4', {'lang-cookie':'SITE_LANG', 'playlabel-en':'Play', 'playlabel-es':'Reproducir ES', playlabel:'Default'});
+            assert(video.querySelector('.gv-play').textContent === 'Play', 'Did not read the exact cookie.');
+            value = 'OTHER=en'; video.refreshLanguage();
+            assert(video.querySelector('.gv-play').textContent === 'Default', 'Missing cookie did not select default text.');
+            value = 'SITE_LANG=%E0%A4%A'; video.refreshLanguage();
+            assert(video.querySelector('.gv-play').textContent === 'Default', 'Invalid encoding was not handled.');
+            value = 'SITE_LANG=en'; video.setAttribute('lang','es');
+            assert(video.querySelector('.gv-play').textContent === 'Reproducir ES' && writes === 0, 'Incorrect priority or unexpected cookie write.');
+          } finally {
+            if (descriptor) Object.defineProperty(document,'cookie',descriptor);
+            else delete document.cookie;
+          }
+        });
+        await test('State translation and refresh preserve player and custom button', async () => {
+          const video = create('native', '../examples/assets/sample.mp4', {lang:'en', 'loadinglabel-en':'Loading', 'errorlabel-en':'Cannot load', 'retrylabel-en':'Retry', fullscreen:'true', 'fullscreenlabel-en':'Full screen'});
+          assert(video.querySelector('.gv-fullscreen').textContent === 'Full screen', 'Full-screen label not translated.');
+          const pending = video.play();
+          assert(video.querySelector('.gv-status').textContent === 'Loading', 'Loading label not translated.');
+          await pending;
+          const player = video.querySelector('video');
+          let changes = 0; video.addEventListener('gennix:statechange',()=>changes++);
+          video.setAttribute('lang','fr'); video.refreshLanguage();
+          assert(video.querySelector('video') === player && changes === 0, 'Refresh changed player or state.');
+          const button = document.createElement('button'); button.setAttribute('data-gv-play',''); button.textContent='My content';
+          const custom = create('native','../examples/assets/sample.mp4', {lang:'en','playlabel-en':'Play'},button);
+          custom.setAttribute('lang','fr'); custom.refreshLanguage();
+          assert(button.textContent === 'My content' && button.getAttribute('aria-label') === 'My content', 'Custom button was modified.');
+          video.reset(); video.setAttribute('lang','en'); video.setAttribute('src','');
+          await rejection(video.play());
+          assert(video.querySelector('.gv-status').textContent === 'Cannot load' && video.querySelector('.gv-play').textContent === 'Retry', 'Error or retry label not translated.');
+        });
+        await test('Close cancels loading and restores poster and focus without height changes', async () => {
+          const video = create();
+          const close = video.querySelector('.gv-close');
+          const height = video.getBoundingClientRect().height;
+          assert(close.hidden, 'Close is visible on the poster.');
+          const pending = video.play();
+          assert(!close.hidden, 'Cannot close during loading.');
+          close.focus(); close.click();
+          await rejection(pending, 'AbortError');
+          assert(video.state === 'idle' && !video.querySelector('video') && close.hidden, 'Loading was not cancelled.');
+          assert(document.activeElement === video.querySelector('.gv-play'), 'Focus was not restored.');
+          await video.play();
+          const player = video.querySelector('video').getBoundingClientRect();
+          const stage = video.querySelector('.gv-stage').getBoundingClientRect();
+          assert(stage.top === video.getBoundingClientRect().top && Math.abs(player.height - stage.height) < 1, 'Close changed the available video area.');
+          close.click();
+          assert(video.state === 'idle' && !video.querySelector('video') && video.getBoundingClientRect().height === height, 'Poster or height not restored.');
+        });
+        await test('Close can be disabled and does not restart autoplay', async () => {
+          const video = create('native','../examples/assets/sample.mp4',{'close-button':'false'});
+          await video.play();
+          assert(video.querySelector('.gv-close').hidden && !video.hasAttribute('data-gv-close'), 'False was not respected.');
+          const auto = create('native','../examples/assets/sample.mp4',{autoplay:'true',muted:'true'});
+          await until(()=>auto.state === 'playing');
+          auto.querySelector('.gv-close').click();
+          await wait(100);
+          assert(auto.state === 'idle' && !auto.querySelector('video') && !auto.querySelector('.gv-play').hidden, 'Autoplay restarted.');
+        });
+        summary.textContent = passed + ' passed · ' + failed + ' failed.';
+        summary.dataset.failed = failed;
+        run.disabled = false;
+      });
+    });
+  </script>
+</body>
+</html>

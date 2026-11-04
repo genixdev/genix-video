@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>gennix-video · Playback options</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../src/gennix-video.css">
+<script src="../src/gennix-video.js" defer></script>
+</head>
+<body class="gv-demo">
+<header class="gv-demo-header"><strong>gennix-video</strong><a href="index.html">Configuration guide</a><span class="gv-demo-badge">0.1.0</span></header>
+<main><div class="gv-demo-intro"><h1>Playback, your way.</h1><p>Each example shows its own configuration. Defaults remain conservative: no autoplay, mute, loop or automatic coordination.</p></div><section class="gv-demo-section"><h2>YouTube URLs and start time</h2><p>Explicit start=5 overrides the URL time of one second.</p><pre><code>&lt;gennix-video id=&quot;url-example&quot; size=&quot;custom&quot; width=&quot;900&quot; height=&quot;440&quot; provider=&quot;youtube&quot; src=&quot;https://www.youtube.com/watch?v=HuACikeyg0c&amp;amp;t=1s&quot; start=&quot;5&quot; muted=&quot;true&quot; controls=&quot;true&quot;&gt;&lt;/gennix-video&gt;</code></pre><gennix-video id="url-example" size="custom" width="900" height="440" provider="youtube" src="https://www.youtube.com/watch?v=HuACikeyg0c&amp;t=1s" start="5" muted="true" controls="true"></gennix-video></section><section class="gv-demo-section"><h2>Style the generated button</h2><p>Click anywhere on the poster, or use the button with a keyboard. Colors support hover and keyboard focus.</p><pre><code>&lt;gennix-video id=&quot;styled-example&quot; size=&quot;custom&quot; width=&quot;900&quot; height=&quot;350&quot; provider=&quot;native&quot; src=&quot;assets/sample.mp4&quot; poster=&quot;assets/sample-poster.jpg&quot; start=&quot;3&quot; poster-click=&quot;true&quot; playsinline=&quot;true&quot; preload=&quot;metadata&quot; playlabel=&quot;Watch demo&quot; play-content=&quot;text&quot; button-background=&quot;#173d32&quot; button-color=&quot;#ffffff&quot; button-hover-background=&quot;#d2ef86&quot; button-hover-color=&quot;#173d32&quot; button-focus-background=&quot;#ffe18a&quot; button-focus-color=&quot;#173d32&quot; button-radius=&quot;12&quot;&gt;&lt;/gennix-video&gt;</code></pre><gennix-video id="styled-example" size="custom" width="900" height="350" provider="native" src="assets/sample.mp4" poster="assets/sample-poster.jpg" start="3" poster-click="true" playsinline="true" preload="metadata" playlabel="Watch demo" play-content="text" button-background="#173d32" button-color="#ffffff" button-hover-background="#d2ef86" button-hover-color="#173d32" button-focus-background="#ffe18a" button-focus-color="#173d32" button-radius="12"></gennix-video></section><section class="gv-demo-section"><h2>Icon only</h2><p>An accessible Play name remains available without visible text.</p><pre><code>&lt;gennix-video size=&quot;custom&quot; width=&quot;480&quot; height=&quot;270&quot; provider=&quot;native&quot; src=&quot;assets/sample.mp4&quot; poster=&quot;assets/sample-poster.jpg&quot; play-content=&quot;icon&quot;&gt;&lt;/gennix-video&gt;</code></pre><gennix-video size="custom" width="480" height="270" provider="native" src="assets/sample.mp4" poster="assets/sample-poster.jpg" play-content="icon"></gennix-video></section><section class="gv-demo-section"><h2>Your own HTML button</h2><p>The component preserves the button contents and accessible name.</p><pre><code>&lt;gennix-video id=&quot;custom-button-example&quot; size=&quot;custom&quot; width=&quot;900&quot; height=&quot;350&quot; provider=&quot;native&quot; src=&quot;assets/sample.mp4&quot; poster=&quot;assets/sample-poster.jpg&quot;&gt;
+  &lt;button type=&quot;button&quot; data-gv-play aria-label=&quot;Watch our story&quot;&gt;&lt;span aria-hidden=&quot;true&quot;&gt;▶&lt;/span&gt;&lt;strong&gt;Watch our story&lt;/strong&gt;&lt;/button&gt;
+&lt;/gennix-video&gt;</code></pre><gennix-video id="custom-button-example" size="custom" width="900" height="350" provider="native" src="assets/sample.mp4" poster="assets/sample-poster.jpg">
+  <button type="button" data-gv-play aria-label="Watch our story"><span aria-hidden="true">▶</span><strong>Watch our story</strong></button>
+</gennix-video></section><section class="gv-demo-section"><h2>Pause other instances</h2><p>Play either video. Once it really starts, the other one pauses.</p><pre><code>&lt;gennix-video id=&quot;coordinated-native&quot; size=&quot;custom&quot; width=&quot;900&quot; height=&quot;320&quot; provider=&quot;native&quot; src=&quot;assets/sample.mp4&quot; poster=&quot;assets/sample-poster.jpg&quot; pause-others=&quot;true&quot;&gt;&lt;/gennix-video&gt;
+&lt;gennix-video id=&quot;coordinated-youtube&quot; size=&quot;custom&quot; width=&quot;900&quot; height=&quot;320&quot; provider=&quot;youtube&quot; src=&quot;HuACikeyg0c&quot; pause-others=&quot;true&quot; muted=&quot;true&quot;&gt;&lt;/gennix-video&gt;</code></pre><gennix-video id="coordinated-native" size="custom" width="900" height="320" provider="native" src="assets/sample.mp4" poster="assets/sample-poster.jpg" pause-others="true"></gennix-video>
+<gennix-video id="coordinated-youtube" size="custom" width="900" height="320" provider="youtube" src="HuACikeyg0c" pause-others="true" muted="true"></gennix-video></section><section class="gv-demo-section"><h2>Return to the poster at the end</h2><p>Starts near the end of the 12-second sample so you can check the result quickly.</p><pre><code>&lt;gennix-video id=&quot;end-example&quot; size=&quot;custom&quot; width=&quot;900&quot; height=&quot;350&quot; provider=&quot;native&quot; src=&quot;assets/sample.mp4&quot; poster=&quot;assets/sample-poster.jpg&quot; start=&quot;10&quot; on-end=&quot;poster&quot;&gt;&lt;/gennix-video&gt;</code></pre><gennix-video id="end-example" size="custom" width="900" height="350" provider="native" src="assets/sample.mp4" poster="assets/sample-poster.jpg" start="10" on-end="poster"></gennix-video></section><section class="gv-demo-section"><h2>Loop</h2><p>Loop takes precedence over on-end. Pause or close to stop the sample.</p><pre><code>&lt;gennix-video size=&quot;custom&quot; width=&quot;400&quot; height=&quot;400&quot; aspect-ratio=&quot;1/1&quot; provider=&quot;native&quot; src=&quot;assets/square.mp4&quot; poster=&quot;assets/square-poster.jpg&quot; muted=&quot;true&quot; loop=&quot;true&quot; controls=&quot;true&quot;&gt;&lt;/gennix-video&gt;</code></pre><gennix-video size="custom" width="400" height="400" aspect-ratio="1/1" provider="native" src="assets/square.mp4" poster="assets/square-poster.jpg" muted="true" loop="true" controls="true"></gennix-video></section><section class="gv-demo-section"><h2>No generated Play button</h2><p>This explicitly loads the native player on page load so its controls are usable. It does not autoplay.</p><pre><code>&lt;gennix-video id=&quot;no-button-example&quot; size=&quot;custom&quot; width=&quot;900&quot; height=&quot;350&quot; provider=&quot;native&quot; src=&quot;assets/sample.mp4&quot; play-button=&quot;false&quot; controls=&quot;true&quot; autoplay=&quot;false&quot;&gt;&lt;/gennix-video&gt;</code></pre><gennix-video id="no-button-example" size="custom" width="900" height="350" provider="native" src="assets/sample.mp4" play-button="false" controls="true" autoplay="false"></gennix-video></section><section class="gv-demo-section"><h2>Hide the close button</h2><p>The close × is enabled by default. false hides it without changing the available player area.</p><pre><code>&lt;gennix-video size=&quot;custom&quot; width=&quot;900&quot; height=&quot;350&quot; provider=&quot;native&quot; src=&quot;assets/sample.mp4&quot; poster=&quot;assets/sample-poster.jpg&quot; close-button=&quot;false&quot;&gt;&lt;/gennix-video&gt;</code></pre><gennix-video size="custom" width="900" height="350" provider="native" src="assets/sample.mp4" poster="assets/sample-poster.jpg" close-button="false"></gennix-video></section><section class="gv-demo-section"><h2>Real full screen</h2><p>This is different from size=viewport. The bottom toggle reserves 48px so it does not cover player controls. Entering full screen does not start playback.</p><pre><code>&lt;gennix-video id=&quot;fullscreen-example&quot; size=&quot;custom&quot; width=&quot;900&quot; height=&quot;440&quot; provider=&quot;youtube&quot; src=&quot;HuACikeyg0c&quot; fullscreen=&quot;true&quot; muted=&quot;true&quot;&gt;&lt;/gennix-video&gt;</code></pre><gennix-video id="fullscreen-example" size="custom" width="900" height="440" provider="youtube" src="HuACikeyg0c" fullscreen="true" muted="true"></gennix-video></section><section class="gv-demo-section"><h2>Controls through JavaScript</h2><p>Original controls can be hidden when your page provides accessible playback actions.</p><pre><code>&lt;gennix-video id=&quot;external-video&quot; provider=&quot;native&quot; src=&quot;assets/sample.mp4&quot; poster=&quot;assets/sample-poster.jpg&quot; controls=&quot;false&quot;&gt;&lt;/gennix-video&gt;
+&lt;div class=&quot;gv-demo-tools&quot;&gt;
+  &lt;button onclick=&quot;document.getElementById(&#x27;external-video&#x27;).play().catch(console.error)&quot;&gt;Play&lt;/button&gt;
+  &lt;button onclick=&quot;document.getElementById(&#x27;external-video&#x27;).pause()&quot;&gt;Pause&lt;/button&gt;
+&lt;/div&gt;</code></pre><gennix-video id="external-video" provider="native" src="assets/sample.mp4" poster="assets/sample-poster.jpg" controls="false"></gennix-video>
+<div class="gv-demo-tools">
+  <button onclick="document.getElementById('external-video').play().catch(console.error)">Play</button>
+  <button onclick="document.getElementById('external-video').pause()">Pause</button>
+</div></section><section class="gv-demo-section"><h2>API, errors and recovery</h2><p>Play, pause, reset or reconnect the native sample. Try a missing file, restore its source, then press Retry. Playback errors remain isolated to this instance.</p><gennix-video id="api-video" size="custom" width="900" height="350" provider="native" src="assets/sample.mp4" poster="assets/sample-poster.jpg"></gennix-video><div class="gv-demo-tools"><button id="api-play">Play via API</button><button id="api-pause">Pause</button><button id="api-reset">Reset</button><button id="api-reconnect">Reconnect</button><button id="api-error">Try missing file</button><button id="api-repair">Restore source</button></div><p id="api-result" role="status">Ready to test.</p><details><summary>Playback event log</summary><ol id="event-log" class="gv-demo-log"></ol></details><pre><code>const video = document.getElementById(&#x27;api-video&#x27;);
+video.play().catch(console.error);
+video.pause();
+video.reset();
+video.addEventListener(&#x27;gennix:error&#x27;, event =&gt; console.error(event.detail.error));</code></pre><p><a href="autoplay.html">Open the separate autoplay demo</a></p></section></main>
+<footer class="gv-demo-footer"><a href="../README.md">README</a><a href="../tests/">Browser tests</a><span>All rights reserved.</span></footer>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const video = document.getElementById('api-video');
+  const result = document.getElementById('api-result');
+  const play = () => video.play().catch(error => { result.textContent = error.message; });
+  for (const name of ['statechange', 'ready', 'play', 'pause', 'ended', 'error']) {
+    video.addEventListener('gennix:' + name, event => {
+      result.textContent = 'State: ' + event.detail.state;
+      const row = document.createElement('li');
+      row.textContent = name + ': ' + event.detail.state + (event.detail.error ? ' — ' + event.detail.error.message : '');
+      const log = document.getElementById('event-log');
+      log.prepend(row);
+      if (log.children.length > 40) log.lastElementChild.remove();
+    });
+  }
+  document.getElementById('api-play').onclick = play;
+  document.getElementById('api-pause').onclick = () => video.pause();
+  document.getElementById('api-reset').onclick = () => video.reset();
+  document.getElementById('api-reconnect').onclick = () => {
+    const marker = document.createComment('video position');
+    video.before(marker); video.remove(); marker.replaceWith(video);
+  };
+  document.getElementById('api-error').onclick = () => {
+    video.reset(); video.setAttribute('src', 'assets/missing-file.mp4'); play();
+  };
+  document.getElementById('api-repair').onclick = () => {
+    video.setAttribute('src', 'assets/sample.mp4'); result.textContent = 'Source restored. Press Retry in the player.';
+  };
+});
+</script>
+</body>
+</html>
