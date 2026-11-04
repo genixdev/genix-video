@@ -34,16 +34,16 @@ For a native file:
 
 ## Live configuration guide
 
-[Open the examples](examples/index.html) for installation, all attributes and copyable demos. On the configured local host: [gennixgithub.loc](http://gennixgithub.loc/gennix-video/examples/).
+[Open the live demo and configuration guide](https://gennix-video.genixdev.com/examples/) for installation, all attributes and copyable demos. The same examples are included in [this repository](examples/index.html).
 
-- [Playback, buttons, coordination and full screen](examples/options.html)
-- [Height limits](examples/height-limit.html) and [viewport with a header](examples/viewport.html)
-- [Languages and existing site cookies](examples/languages.html)
-- [Explicit autoplay](examples/autoplay.html)
-- [Minimal HTML](examples/minimal.html) and [escaped PHP integration](examples/integration.php)
-- [Browser tests](tests/index.html)
+- [Playback, buttons, coordination and full screen](https://gennix-video.genixdev.com/examples/options.html)
+- [Height limits](https://gennix-video.genixdev.com/examples/height-limit.html) and [viewport with a header](https://gennix-video.genixdev.com/examples/viewport.html)
+- [Languages and existing site cookies](https://gennix-video.genixdev.com/examples/languages.html)
+- [Explicit autoplay](https://gennix-video.genixdev.com/examples/autoplay.html)
+- [Minimal HTML](https://gennix-video.genixdev.com/examples/minimal.html) and [escaped PHP integration](https://gennix-video.genixdev.com/examples/integration.php)
+- [Browser tests](https://gennix-video.genixdev.com/tests/)
 
-For another environment, serve the repository with your existing web server. Alternatively, `php -S localhost:8080` from the repository directory serves both static examples and PHP; open `/examples/`. PHP is only needed for the PHP example. There is no hosted/CDN installation URL yet: use the two local files, not an invented package URL.
+For local development, serve the repository with your existing web server. Alternatively, `php -S localhost:8080` from the repository directory serves both static examples and PHP; open `/examples/`. PHP is only needed for the PHP example. The public site hosts the demos; no versioned package or CDN distribution is provided. For installation, copy the two source files to your own server.
 
 ## Configuration
 
@@ -253,4 +253,4 @@ Requires modern Custom Elements, AbortController event listeners, CSS size conta
 
 ## Rights and release status
 
-All rights reserved. No MIT or other open-source permission is granted. Third-party media, trademarks and services retain their respective rights. The embedded YouTube video is a demonstration, not an included or licensed asset. No repository, package or CDN has been published as part of this delivery.
+All rights reserved. No MIT or other open-source permission is granted. Third-party media, trademarks and services retain their respective rights. The embedded YouTube video is a demonstration, not an included or licensed asset. Source is maintained in [genixdev/gennix-video](https://github.com/genixdev/gennix-video); the [public demo](https://gennix-video.genixdev.com/examples/) is hosted separately. No package or CDN release has been published.
