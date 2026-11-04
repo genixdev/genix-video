@@ -53,7 +53,7 @@ Boolean attributes accept an empty value or `true` as true, `false` as false. Mi
 | --- | --- | --- |
 | `provider` | youtube | youtube or native. |
 | `src` | Required | YouTube ID or full watch, youtu.be, embed or shorts URL; native HTTP(S) URL or relative file path. |
-| `poster` | YouTube thumbnail; none for native | Poster image URL. Use a local image to avoid an initial remote thumbnail request. |
+| `poster` | Best available YouTube thumbnail; none for native | Explicit poster URL takes priority. Otherwise try maxresdefault, sddefault, then hqdefault, stopping at the first valid image. Use a local poster to avoid thumbnail requests. |
 | `size` | fullwidth | fullwidth, custom or viewport. Fullwidth fills the parent width, not necessarily the entire browser. |
 | `aspect-ratio` | 16/9 | Reserved box ratio, e.g. 4/3, 1/1 or 9/16. Native metadata adjusts the player ratio without changing the box. |
 | `width` | 100% | Custom width: positive pixels (900 or 900px), or a percentage greater than 0 and at most 100%. |
@@ -109,6 +109,8 @@ Fullwidth height is width × ratio denominator ÷ numerator: 1920px at 16/9 give
 ```
 
 Custom width shrinks to fit its parent, but a fixed height stays fixed. Use height=auto for a ratio-derived height. Fullwidth ignores legacy width/height CSS limits unless the explicit max-height attribute is present. Real full screen overrides size limits.
+
+Without an explicit poster, YouTube thumbnails are tried sequentially: maxresdefault.jpg → sddefault.jpg → hqdefault.jpg. A failed load or a small placeholder (width ≤ 120px or height ≤ 90px) advances to the next candidate. The first valid image supplies both the poster and blurred background; lower candidates are not requested. If all fail, the component keeps its solid background and usable Play button. Explicit posters never trigger this search, even if they fail. Thumbnail selection does not load the YouTube player API.
 
 The poster is sharp before activation. `background="poster"` blurs a static copy behind the player; it becomes visible where the player leaves space. `cover` fills by cropping and is not a blur setting. Native metadata determines the player's actual ratio. YouTube uses the declared ratio and may contain its own black bars.
 

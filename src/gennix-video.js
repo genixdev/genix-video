@@ -304,6 +304,8 @@
     disconnectedCallback() {
       instances.delete(this);
       this._connectionEvents?.abort();
+      this._cancelPosterLoad();
+      this._posterKey = null;
       this._release(aborted());
       if (this._stage) this._setState('idle');
     }
@@ -361,19 +363,55 @@
       this._toolbar.hidden = !fullscreen;
       this.toggleAttribute('data-gv-fullscreen', fullscreen);
       this._updateFullscreen();
-      const poster = this.getAttribute('poster') || (this._provider === 'youtube'
-        ? 'https://i.ytimg.com/vi/' + this._src + '/hqdefault.jpg' : '');
-      if (poster) {
-        const url = safeURL(poster);
-        if (this._poster.src !== url) this._poster.src = url;
-        this._poster.hidden = false;
-        this._background.style.backgroundImage = 'url(' + JSON.stringify(url) + ')';
-      } else {
-        this._poster.removeAttribute('src');
-        this._poster.hidden = true;
-        this._background.style.backgroundImage = '';
-      }
+      this._configurePoster();
       this._setState(this.state, this._messageKey);
+    }
+
+    _cancelPosterLoad() {
+      if (this._posterProbe) {
+        this._posterProbe.onload = null;
+        this._posterProbe.onerror = null;
+        this._posterProbe = null;
+      }
+    }
+
+    _configurePoster() {
+      const explicit = this.getAttribute('poster');
+      const customURL = explicit ? safeURL(explicit) : '';
+      const key = customURL || (this._provider === 'youtube' ? 'youtube:' + this._src : 'none');
+      // Reconfiguration on Play must not restart a completed or pending image search.
+      if (this._posterKey === key) return;
+      this._cancelPosterLoad();
+      this._posterKey = key;
+      this._poster.removeAttribute('src');
+      this._poster.hidden = true;
+      this._background.style.backgroundImage = '';
+      const candidates = customURL ? [customURL] : this._provider === 'youtube'
+        ? ['maxresdefault', 'sddefault', 'hqdefault'].map(name =>
+          'https://i.ytimg.com/vi/' + this._src + '/' + name + '.jpg') : [];
+      let index = 0;
+      const next = () => {
+        if (!this.isConnected || this._posterKey !== key || index >= candidates.length) return;
+        const url = candidates[index++];
+        const probe = new Image();
+        this._posterProbe = probe;
+        const current = () => this.isConnected && this._posterKey === key && this._posterProbe === probe;
+        const finish = (loaded) => {
+          if (!current()) return;
+          this._cancelPosterLoad();
+          // Small placeholder responses must not win merely because they loaded.
+          const valid = loaded && (customURL || (probe.naturalWidth > 120 && probe.naturalHeight > 90));
+          if (!valid) { next(); return; }
+          this._poster.src = url;
+          this._poster.hidden = false;
+          this._background.style.backgroundImage = 'url(' + JSON.stringify(url) + ')';
+        };
+        probe.onload = () => finish(true);
+        probe.onerror = () => finish(false);
+        // Probe sequentially. Stop at the first valid image; reuse it for both layers.
+        probe.src = url;
+      };
+      next();
     }
 
     _emit(name, extra = {}) {

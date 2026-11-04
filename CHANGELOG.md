@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Automatically select the first valid YouTube thumbnail in maxresdefault → sddefault → hqdefault order. Reject small placeholders, respect explicit posters, and guard against stale image callbacks.
+
 ## 0.1.0 — 2026-11-04
 
 Initial local release candidate; not published.
