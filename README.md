@@ -240,7 +240,7 @@ Attributes take precedence over equivalent variables. --gv-attr-*, --gv-ratio, -
 
 Open tests/index.html through HTTP and click Run tests. Tests use native sample files; the policy-rejection and cookie-read cases are explicitly simulated. They do not create real cookies. If Node.js is available, npm run check validates the runtime syntax; npm install is unnecessary. Browser tests provide behavioral coverage, not just syntax checks.
 
-Manually verify Play/pause/reset, close during loading, retry after a bad URL, reconnect, keyboard focus, full screen, mobile sizing and YouTube network behavior. Local sample generation commands are in [examples/assets/README.md](examples/assets/README.md).
+Manually verify Play/pause/reset, close during loading, retry after a bad URL, reconnect, keyboard focus, full screen, mobile sizing and YouTube network behavior. The latest local browser run passed all 45 tests. Real YouTube playback, thumbnail selection, close, full screen and PHP integration have also been checked locally; physical devices, Safari and Firefox remain unverified. Local sample generation commands are in [examples/assets/README.md](examples/assets/README.md).
 
 ## Compatibility and troubleshooting
 
