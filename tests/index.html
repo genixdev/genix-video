@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>gennix-video · Browser tests</title>
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="../src/gennix-video.css">
-  <script src="../src/gennix-video.js" defer></script>
+  <link rel="stylesheet" href="../src/gennix-video.css?v=video-background">
+  <script src="../src/gennix-video.js?v=video-background" defer></script>
 </head>
 <body class="gv-demo">
   <main class="gv-demo-section">
@@ -501,6 +501,101 @@
           auto.querySelector('.gv-close').click();
           await wait(100);
           assert(auto.state === 'idle' && !auto.querySelector('video') && !auto.querySelector('.gv-play').hidden, 'Autoplay restarted.');
+        });
+        await test('Native video background is lazy, muted, contained behind controls and follows pause/reset', async () => {
+          const video = create('native','../examples/assets/sample.mp4',{background:'video',size:'custom',width:'700',height:'300'});
+          assert(!video.querySelector('video'), 'Background loaded before activation.');
+          await video.play();
+          const main = video.querySelector('.gv-stage video');
+          await until(() => video.querySelector('.gv-background-player')?.hasAttribute('data-gv-visible'));
+          const background = video.querySelector('.gv-background-player');
+          assert(video.querySelectorAll('video').length === 2 && background.muted && background.volume === 0 && !background.controls, 'Background is not a single silent copy.');
+          assert(background.tabIndex === -1 && background.closest('[inert][aria-hidden="true"]'), 'Background is interactive.');
+          assert(main.getBoundingClientRect().width <= video.getBoundingClientRect().width + 1 && getComputedStyle(background).objectFit === 'cover', 'Foreground/background layout incorrect.');
+          video.pause();
+          await until(() => video.state === 'paused');
+          assert(background.paused, 'Background ignored pause.');
+          await video.play();
+          await until(() => !background.paused);
+          main.currentTime = 2;
+          await until(() => Math.abs(background.currentTime-main.currentTime) < 1);
+          video.reset();
+          assert(!video.querySelector('video') && background.paused && !background.hasAttribute('src'), 'Reset leaked decorative media.');
+          await video.play();
+          await until(() => video.querySelector('.gv-background-player'));
+          video.remove();
+          assert(!video.querySelector('video'), 'Disconnect leaked players.');
+        });
+        await test('Background policy rejection and media errors do not fail the main video', async () => {
+          const original = HTMLMediaElement.prototype.play;
+          const video = create('native','../examples/assets/sample.mp4',{background:'video'});
+          let errors = 0;
+          video.addEventListener('gennix:error', () => errors++);
+          try {
+            HTMLMediaElement.prototype.play = function () {
+              return this.classList.contains('gv-background-player')
+                ? Promise.reject(new DOMException('Simulated decorative policy rejection','NotAllowedError'))
+                : original.call(this);
+            };
+            await video.play();
+            await until(() => video._backgroundFailed);
+            assert(video.state === 'playing' && !video.querySelector('.gv-background-player') && errors === 0, 'Background rejection affected foreground.');
+          } finally { HTMLMediaElement.prototype.play = original; }
+          video.reset();
+          await video.play();
+          await until(() => video.querySelector('.gv-background-player')?.hasAttribute('data-gv-visible'));
+          video.querySelector('.gv-background-player').dispatchEvent(new Event('error'));
+          assert(video.state === 'playing' && errors === 0 && !video.querySelector('.gv-background-player'), 'Decorative error escaped isolation.');
+        });
+        await test('Foreground completion stops the native background and poster mode creates no copy', async () => {
+          const video = create('native','../examples/assets/sample.mp4',{background:'video'});
+          await video.play();
+          await until(() => video.querySelector('.gv-background-player')?.hasAttribute('data-gv-visible'));
+          const main = video.querySelector('.gv-stage video');
+          const background = video.querySelector('.gv-background-player');
+          main.currentTime = main.duration - .2;
+          await until(() => video.state === 'ended');
+          assert(background.paused, 'Background continued after foreground ended.');
+          const staticVideo = create('native','../examples/assets/sample.mp4',{background:'poster'});
+          await staticVideo.play();
+          assert(staticVideo.querySelectorAll('video').length === 1, 'Static mode created a second player.');
+        });
+        await test('YouTube background handles late readiness, mute, resume and isolated errors (simulated API)', async () => {
+          const original = window.YT;
+          const players = [];
+          window.YT = { PlayerState:{PLAYING:1,PAUSED:2,ENDED:0,BUFFERING:3}, Player:class {
+            constructor(node, options) {
+              this.node=node; this.events=options.events; this.time=3; this.plays=0;
+              players.push(this);
+              if (node.classList.contains('gv-player')) queueMicrotask(() => this.events.onReady({target:this}));
+            }
+            getCurrentTime() { return this.time; }
+            seekTo(time) { this.time=time; }
+            mute() { this.muted=true; }
+            playVideo() { this.plays++; queueMicrotask(() => { if (!this.destroyed) this.events.onStateChange({target:this,data:1}); }); }
+            pauseVideo() { this.paused=true; queueMicrotask(() => { if (!this.destroyed) this.events.onStateChange({target:this,data:2}); }); }
+            destroy() { this.destroyed=true; this.node.remove(); }
+          }};
+          let video;
+          try {
+            video = create('youtube','HuACikeyg0c',{background:'video'});
+            assert(players.length === 0, 'YouTube loaded before Play.');
+            await video.play();
+            assert(players.length === 2, 'Expected two players.');
+            const background=players[1];
+            assert(new URL(background.node.src).searchParams.get('controls') === '0' && background.node.tabIndex === -1, 'Decorative iframe has controls/focus.');
+            video.pause();
+            await until(() => video.state === 'paused');
+            background.events.onReady({target:background});
+            assert(background.muted && background.plays === 0 && background.paused, 'Late readiness restarted playback.');
+            await video.play();
+            await until(() => background.node.hasAttribute('data-gv-visible'));
+            let errors=0; video.addEventListener('gennix:error',()=>errors++);
+            background.events.onError({target:background,data:100});
+            assert(background.destroyed && video.state === 'playing' && errors === 0, 'Decorative failure affected main player.');
+            video.reset();
+            assert(players[0].destroyed && !video.querySelector('iframe'), 'Reset leaked YouTube player.');
+          } finally { video?.remove(); window.YT=original; }
         });
         // Simulated image responses make fallback checks independent of YouTube availability.
         async function thumbnails(outcomes, check) {

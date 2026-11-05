@@ -55,7 +55,28 @@ gennix-video .gv-background {
 gennix-video[template="hero"]:not([background]) .gv-background,
 gennix-video[size="custom"]:not([background]) .gv-background,
 gennix-video[size="viewport"]:not([background]) .gv-background,
+gennix-video[background="video"] .gv-background,
 gennix-video[background="poster"] .gv-background { display: block; }
+
+/* Decorative motion uses cover; the foreground player remains contained. */
+gennix-video[background="video"] .gv-background { container-type: size; }
+gennix-video .gv-background-player {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+gennix-video iframe.gv-background-player {
+  width: max(100cqw, calc(100cqh * var(--gv-ratio, 1.777777778)));
+  height: max(100cqh, calc(100cqw / var(--gv-ratio, 1.777777778)));
+}
+gennix-video .gv-background-player[data-gv-visible] { opacity: 1; }
 gennix-video .gv-background::after {
   content: '';
   position: absolute;

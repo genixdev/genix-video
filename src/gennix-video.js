@@ -218,6 +218,7 @@
       this._generation = 0;
       this._background = element('div', 'gv-background');
       this._background.setAttribute('aria-hidden', 'true');
+      this._background.setAttribute('inert', '');
       this._poster = element('img', 'gv-poster');
       this._poster.alt = '';
       this._poster.decoding = 'async';
@@ -326,6 +327,7 @@
         this._src = safeURL(this._src);
       }
       this._configureLayout();
+      this._videoBackground = this.getAttribute('background') === 'video';
       this._start = seconds(this.getAttribute('start') ?? urlTime ?? '0');
       this._controls = booleanAttribute(this, 'controls', true);
       this._muted = booleanAttribute(this, 'muted');
@@ -435,6 +437,7 @@
       this._button.hidden = state !== 'error' && !manualButton && (this._playerReady || (!this._customButton && this._showPlay === false) || !['idle', 'loading'].includes(state));
       this._messageKey = message;
       this._renderTexts();
+      this._syncVideoBackground(state === 'playing');
       if (previousState !== undefined && previousState !== state) {
         this._emit('statechange', { previousState });
       }
@@ -449,6 +452,8 @@
     _release(error = aborted()) {
       // Invalidate first: destroy/pause/load may trigger callbacks from the old player.
       this._generation++;
+      this._releaseVideoBackground();
+      this._backgroundFailed = false;
       this._settlePlay(error);
       this._mediaEvents?.abort();
       this._mediaEvents = null;
@@ -561,6 +566,7 @@
 
     pause() {
       if (!this._stage || this.state === 'idle' || this.state === 'error') return;
+      this._syncVideoBackground(false);
       if (!this._playerReady) {
         this.reset();
         return;
@@ -606,6 +612,126 @@
       }
     }
 
+    _releaseVideoBackground() {
+      this._backgroundDesired = false;
+      this._backgroundEvents?.abort();
+      this._backgroundEvents = null;
+      const youtube = this._backgroundYouTube;
+      const node = this._backgroundNode;
+      this._backgroundYouTube = null;
+      this._backgroundNode = null;
+      this._backgroundReady = false;
+      // Decorative media must never prevent the main player from resetting.
+      try { youtube?.destroy(); } catch { /* Keep cleanup independent of YouTube. */ }
+      if (node?.tagName === 'VIDEO') {
+        node.pause();
+        node.removeAttribute('src');
+        node.load();
+      }
+      node?.remove();
+    }
+
+    _disableVideoBackground() {
+      this._backgroundFailed = true;
+      this._releaseVideoBackground();
+      // The static poster remains underneath; no main-player error is emitted.
+    }
+
+    _syncVideoBackground(playing) {
+      this._backgroundDesired = playing;
+      if (!this._videoBackground || this._backgroundFailed) return;
+      if (playing && !this._backgroundNode) this._createVideoBackground();
+      const node = this._backgroundNode;
+      if (!node || !this._backgroundReady) return;
+      try {
+        if (!playing) {
+          if (this._backgroundYouTube) this._backgroundYouTube.pauseVideo();
+          else node.pause();
+          return;
+        }
+        const time = this._video?.currentTime ?? this._youtube?.getCurrentTime() ?? this._start;
+        if (this._backgroundYouTube) {
+          this._backgroundYouTube.mute();
+          if (Math.abs(this._backgroundYouTube.getCurrentTime() - time) > 1) this._backgroundYouTube.seekTo(time, true);
+          this._backgroundYouTube.playVideo();
+        } else {
+          node.muted = true;
+          node.volume = 0;
+          if (Math.abs(node.currentTime - time) > 1) node.currentTime = time;
+          node.playbackRate = this._video.playbackRate;
+          node.play().catch(error => {
+            if (this._backgroundNode === node && error.name !== 'AbortError') this._disableVideoBackground();
+          });
+        }
+      } catch { this._disableVideoBackground(); }
+    }
+
+    _createVideoBackground() {
+      const generation = this._generation;
+      const native = this._provider === 'native';
+      const node = element(native ? 'video' : 'iframe', 'gv-background-player');
+      this._backgroundNode = node;
+      node.tabIndex = -1;
+      node.setAttribute('aria-hidden', 'true');
+      const current = () => this.isConnected && this._generation === generation && this._backgroundNode === node;
+      const failed = () => { if (current()) this._disableVideoBackground(); };
+      // This layer starts only after confirmed main playback, never from a poster load.
+      if (native) {
+        this._backgroundEvents = new AbortController();
+        const listen = (name, callback) => node.addEventListener(name, () => {
+          if (current()) callback();
+        }, { signal: this._backgroundEvents.signal });
+        node.muted = true;
+        node.defaultMuted = true;
+        node.volume = 0;
+        node.playsInline = true;
+        node.controls = false;
+        node.loop = true;
+        node.preload = 'auto';
+        listen('loadedmetadata', () => {
+          this._backgroundReady = true;
+          this._syncVideoBackground(this._backgroundDesired);
+        });
+        listen('playing', () => {
+          if (this._backgroundDesired) node.setAttribute('data-gv-visible', '');
+          else node.pause();
+        });
+        listen('waiting', () => node.removeAttribute('data-gv-visible'));
+        listen('error', failed);
+        node.src = this._src;
+        this._background.append(node);
+        return;
+      }
+      node.title = 'Decorative video background';
+      node.allow = 'autoplay; encrypted-media';
+      node.referrerPolicy = 'strict-origin-when-cross-origin';
+      const url = new URL('https://www.youtube-nocookie.com/embed/' + this._src);
+      url.search = new URLSearchParams({ enablejsapi: '1', origin: location.origin,
+        controls: '0', disablekb: '1', playsinline: '1', mute: '1', loop: '1', playlist: this._src,
+        start: String(Math.floor(this._youtube?.getCurrentTime() || this._start)) });
+      node.src = url.href;
+      this._background.append(node);
+      try {
+        this._backgroundYouTube = new window.YT.Player(node, { events: {
+          onReady: event => {
+            if (!current()) return;
+            event.target.mute();
+            this._backgroundReady = true;
+            this._syncVideoBackground(this._backgroundDesired);
+          },
+          onStateChange: event => {
+            if (!current()) return;
+            if (event.data === window.YT.PlayerState.PLAYING) {
+              if (this._backgroundDesired) node.setAttribute('data-gv-visible', '');
+              else event.target.pauseVideo();
+            } else if (event.data !== window.YT.PlayerState.PAUSED) node.removeAttribute('data-gv-visible');
+          },
+          onAutoplayBlocked: failed,
+          onError: failed
+        } });
+      } catch { failed(); }
+    }
+
     async _load(generation) {
       const current = () => this.isConnected && generation === this._generation;
       try {
@@ -644,6 +770,8 @@
           listen('waiting', () => {
             if (this._playerReady && !video.paused) this._setState('loading', 'loadinglabel');
           });
+          listen('seeked', () => this._syncVideoBackground(this.state === 'playing'));
+          listen('ratechange', () => this._syncVideoBackground(this.state === 'playing'));
           listen('error', () => this._fail(
             new Error('Unable to load the video. Check its URL, connection and format.'),
             video.error?.code || 'native-load'));

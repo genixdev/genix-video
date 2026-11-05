@@ -60,7 +60,7 @@ Boolean attributes accept an empty value or `true` as true, `false` as false. Mi
 | `height` | auto | Custom height: positive pixels or auto. Fixed height stays fixed on narrow screens. |
 | `max-height` | No extra limit | Positive pixels, vh, dvh or svh. Example: 80dvh. Modern viewport units fall back to vh when unsupported. |
 | `viewport-offset` | 0 | Non-negative pixels subtracted from viewport height or an explicit max-height. Applied once. If greater than the limit, height becomes zero. |
-| `background` | poster for custom/viewport; solid for fullwidth | poster enables a blurred static background; solid uses a color; none is transparent. |
+| `background` | poster for custom/viewport; solid for fullwidth | poster enables a blurred static image; video uses a second muted video with blur and a poster fallback; solid uses a color; none is transparent. |
 | `fit` | contain | contain shows the whole video. cover crops native video only; YouTube always uses contain. |
 | `template` | inline | Legacy inline or hero layout. Explicit size is recommended and takes precedence. |
 | `controls` | true | Show original player controls. When false, provide your own pause control if needed. |
@@ -115,6 +115,25 @@ Without an explicit poster, YouTube thumbnails are tried sequentially: maxresdef
 The poster is sharp before activation. `background="poster"` blurs a static copy behind the player; it becomes visible where the player leaves space. `cover` fills by cropping and is not a blur setting. Native metadata determines the player's actual ratio. YouTube uses the declared ratio and may contain its own black bars.
 
 The close × overlays the container and **does not reserve top space or reduce player height**. It may overlap an iframe corner when no background margin exists. Disable it with close-button=false if necessary. The optional full-screen toolbar still reserves 48px at the bottom.
+
+### Moving video background
+
+Use `background="video"` with either provider. [Open the video-background examples](examples/video-background.html).
+
+```html
+<gennix-video size="fullwidth" aspect-ratio="16/9" max-height="60dvh"
+  provider="youtube" src="HuACikeyg0c" background="video"></gennix-video>
+
+<gennix-video size="custom" width="100%" height="420"
+  provider="native" src="video.mp4" poster="poster.jpg"
+  background="video"></gennix-video>
+```
+
+A second muted copy covers the background, with the same blur/dimming settings as the static poster. It is decorative, has no controls or pointer interaction, and is excluded from keyboard focus and accessibility navigation. The foreground remains contained and is the only source of public playback events.
+
+The second player is created only after the main video actually starts. It follows pause, resume, buffering and completion, and is released on close/reset, main-player failure or disconnect. If the background loads late, it respects the latest playback state. The poster stays underneath while loading or buffering; an unavailable or blocked background falls back to the poster without failing the main video. Pausing keeps the last available frame. Background failures are retried after reset and a new activation.
+
+Synchronization is approximate, without continuous polling. Native seek/rate changes are followed; YouTube adjusts on resumed playback, but its independent loading, ads and policies can produce different pictures. Both YouTube players share the same API script. The background copy loops while the main video is active; it stops when the foreground stops. This mode increases decoding, bandwidth and battery use. Use background="poster" for the lighter alternative. When foreground and container ratios match, there may be no visible background margin.
 
 ### Playback and loading
 
@@ -240,7 +259,7 @@ Attributes take precedence over equivalent variables. --gv-attr-*, --gv-ratio, -
 
 Open tests/index.html through HTTP and click Run tests. Tests use native sample files; the policy-rejection and cookie-read cases are explicitly simulated. They do not create real cookies. If Node.js is available, npm run check validates the runtime syntax; npm install is unnecessary. Browser tests provide behavioral coverage, not just syntax checks.
 
-Manually verify Play/pause/reset, close during loading, retry after a bad URL, reconnect, keyboard focus, full screen, mobile sizing and YouTube network behavior. The latest local browser run passed all 45 tests. Real YouTube playback, thumbnail selection, close, full screen and PHP integration have also been checked locally; physical devices, Safari and Firefox remain unverified. Local sample generation commands are in [examples/assets/README.md](examples/assets/README.md).
+Manually verify Play/pause/reset, close during loading, retry after a bad URL, reconnect, keyboard focus, full screen, mobile sizing and YouTube network behavior. The latest local browser run passed all 49 tests. Real YouTube playback, moving backgrounds, thumbnail selection, close, full screen and PHP integration have also been checked locally; physical devices, Safari and Firefox remain unverified. Local sample generation commands are in [examples/assets/README.md](examples/assets/README.md).
 
 ## Compatibility and troubleshooting
 

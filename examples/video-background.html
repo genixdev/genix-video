@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>gennix-video · Blurred video background</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../src/gennix-video.css?v=video-background">
+  <script src="../src/gennix-video.js?v=video-background" defer></script>
+</head>
+<body class="gv-demo">
+  <header class="gv-demo-header"><strong>gennix-video</strong><a href="index.html">Configuration guide</a><span class="gv-demo-badge">Video background</span></header>
+  <main>
+    <div class="gv-demo-intro">
+      <p class="gv-demo-eyebrow">Same video. A moving background.</p>
+      <h1>Blur in motion.</h1>
+      <p class="gv-demo-lead">The foreground stays sharp and complete. A second muted copy fills the background, enlarged and blurred. The poster remains underneath while it loads or if playback is blocked. Nothing starts until you press Play.</p>
+      <p>This optional effect uses more network and decoding resources. The two copies follow play, pause and close; exact frame synchronization is not required.</p>
+    </div>
+    <section class="gv-demo-section">
+      <h2>YouTube</h2>
+      <p>Two independent players share the same API download. Ads, loading and browser playback policies can differ. The background has no interaction or keyboard focus.</p>
+      <gennix-video id="youtube-motion" size="fullwidth" aspect-ratio="16/9" max-height="60dvh"
+        provider="youtube" src="HuACikeyg0c" background="video" muted="true" pause-others="true"></gennix-video>
+      <div class="gv-demo-tools"><button data-action="play" data-target="youtube-motion">Play / resume</button><button data-action="pause" data-target="youtube-motion">Pause both</button><button data-action="reset" data-target="youtube-motion">Back to poster</button></div>
+      <pre><code>&lt;gennix-video size="fullwidth" aspect-ratio="16/9" max-height="60dvh"
+  provider="youtube" src="HuACikeyg0c" background="video" muted="true" pause-others="true"&gt;
+&lt;/gennix-video&gt;</code></pre>
+    </section>
+    <section class="gv-demo-section">
+      <h2>Native video</h2>
+      <p>The foreground uses the original controls. The background stays muted even if you turn up the foreground volume.</p>
+      <gennix-video id="native-motion" size="fullwidth" aspect-ratio="16/9" max-height="55dvh"
+        provider="native" src="assets/sample.mp4" poster="assets/sample-poster.jpg" background="video" pause-others="true"></gennix-video>
+      <div class="gv-demo-tools"><button data-action="play" data-target="native-motion">Play / resume</button><button data-action="pause" data-target="native-motion">Pause both</button><button data-action="reset" data-target="native-motion">Back to poster</button></div>
+      <pre><code>&lt;gennix-video size="fullwidth" aspect-ratio="16/9" max-height="55dvh"
+  provider="native" src="assets/sample.mp4" poster="assets/sample-poster.jpg"
+  background="video" pause-others="true"&gt;
+&lt;/gennix-video&gt;</code></pre>
+    </section>
+    <section class="gv-demo-section">
+      <h2>Portrait video, wide container</h2>
+      <p>The side margins make the moving blur easy to see, including on a narrow screen.</p>
+      <gennix-video id="portrait-motion" size="custom" width="100%" height="420"
+        provider="native" src="assets/portrait.mp4" poster="assets/portrait-poster.jpg" aspect-ratio="9/16" background="video" pause-others="true"></gennix-video>
+      <div class="gv-demo-tools"><button data-action="play" data-target="portrait-motion">Play / resume</button><button data-action="pause" data-target="portrait-motion">Pause both</button><button data-action="reset" data-target="portrait-motion">Back to poster</button></div>
+      <pre><code>&lt;gennix-video size="custom" width="100%" height="420" aspect-ratio="9/16"
+  provider="native" src="assets/portrait.mp4" poster="assets/portrait-poster.jpg"
+  background="video" pause-others="true"&gt;
+&lt;/gennix-video&gt;</code></pre>
+    </section>
+    <p id="demo-result" class="gv-demo-section" role="status"></p>
+  </main>
+  <footer class="gv-demo-footer"><a href="index.html">Configuration guide</a><a href="../tests/">Browser tests</a><span>All rights reserved.</span></footer>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('[data-action]').forEach(button => {
+        button.addEventListener('click', async () => {
+          const video = document.getElementById(button.dataset.target);
+          try {
+            await video[button.dataset.action]();
+            document.getElementById('demo-result').textContent = button.dataset.target + ': ' + video.state;
+          } catch (error) { document.getElementById('demo-result').textContent = error.message; }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
