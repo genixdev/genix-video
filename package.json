@@ -1,9 +1,33 @@
 {
   "name": "genix-video",
   "version": "1.0.1",
-  "private": true,
   "description": "Dependency-free custom element for YouTube and native video",
   "license": "MIT",
+  "author": {
+    "name": "genixdev",
+    "url": "https://genixdev.com/"
+  },
+  "homepage": "https://genix-video.genixdev.com/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/genixdev/genix-video.git"
+  },
+  "bugs": "https://github.com/genixdev/genix-video/issues",
+  "keywords": ["web-component", "video-player", "youtube", "html5-video", "javascript", "blurred-background"],
+  "files": ["src/genix-video.js", "src/genix-video.css", "README.md", "LICENSE", "CHANGELOG.md"],
+  "main": "./src/genix-video.js",
+  "style": "./src/genix-video.css",
+  "sideEffects": true,
+  "exports": {
+    ".": "./src/genix-video.js",
+    "./src/genix-video.js": "./src/genix-video.js",
+    "./src/genix-video.css": "./src/genix-video.css",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "check": "node --check src/genix-video.js",
     "test": "playwright test"

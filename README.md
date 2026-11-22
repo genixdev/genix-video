@@ -2,9 +2,9 @@
 
 Version **1.0.1**. A dependency-free custom element for YouTube and native video: full-width posters, centered uncropped playback and an optional blurred background. One JavaScript file and one stylesheet; no build step, framework, provider system or plugins.
 
-[Live demo](https://genix-video.genixdev.com/) · [Configuration guide](https://genix-video.genixdev.com/examples/) · [Download v1.0.1](https://github.com/genixdev/genix-video/releases/tag/v1.0.1) · [Built by genixdev](https://genixdev.com/)
+[Live demo](https://genix-video.genixdev.com/) · [Configuration guide](https://genix-video.genixdev.com/examples/) · [Download v1.0.1](https://github.com/genixdev/genix-video/releases/tag/v1.0.1) · [npm package](https://www.npmjs.com/package/genix-video) · [Built by genixdev](https://genixdev.com/)
 
-**MIT licensed.** See [LICENSE](LICENSE). Demo videos and posters have separate [media licenses and credits](examples/assets/README.md). Nothing has been published to a package registry or CDN.
+**MIT licensed.** See [LICENSE](LICENSE). Demo videos and posters have separate [media licenses and credits](https://github.com/genixdev/genix-video/blob/main/examples/assets/README.md).
 
 ## Quick start
 
@@ -27,6 +27,25 @@ Then add a video:
 ```
 
 Serve through HTTP(S), not `file://`. Native sources and posters resolve relative to the HTML document. Include the stylesheet and script once; repeated script inclusion is guarded. No npm install is required. Keep the custom button inside the element before initialization; using the deferred script above ensures normal parsed HTML is ready.
+
+### npm installation
+
+Install from npm:
+
+```sh
+npm install genix-video
+```
+
+In a browser entry point with a bundler that supports CSS imports:
+
+```js
+import 'genix-video';
+import 'genix-video/src/genix-video.css';
+```
+
+The JavaScript registers `<genix-video>`; it does not export a constructor or framework component. For server-rendered applications, load it only in browser-side code. Alternatively, copy the two files from `node_modules/genix-video/src/` to your public assets and use the script/link tags above.
+
+The package contains the component, README, changelog and MIT license. Demo videos, posters, tests and development tools are not included. It has no runtime dependencies. npm is optional; the direct-download installation remains available.
 
 For a native file:
 
@@ -123,7 +142,7 @@ The close × overlays the container and **does not reserve top space or reduce p
 
 ### Moving video background
 
-Use `background="video"` with either provider. [Open the live video-background examples](https://genix-video.genixdev.com/examples/video-background.html) or inspect their [HTML source](examples/video-background.html).
+Use `background="video"` with either provider. [Open the live video-background examples](https://genix-video.genixdev.com/examples/video-background.html) or inspect their [HTML source](https://github.com/genixdev/genix-video/blob/main/examples/video-background.html).
 
 ```html
 <genix-video size="fullwidth" aspect-ratio="16/9" max-height="60dvh"
@@ -268,7 +287,7 @@ Attributes take precedence over equivalent variables. --gv-attr-*, --gv-ratio, -
 
 Open tests/index.html through HTTP and click Run tests. Tests use native sample files; the policy-rejection and cookie-read cases are explicitly simulated. They do not create real cookies. If Node.js is available, npm run check validates the runtime syntax; npm install is unnecessary. Browser tests provide behavioral coverage, not just syntax checks.
 
-Manually verify Play/pause/reset, close during loading, retry after a bad URL, reconnect, keyboard focus, full screen, mobile sizing and YouTube network behavior. Sample sources, edits and licenses are documented in [examples/assets/README.md](examples/assets/README.md).
+Manually verify Play/pause/reset, close during loading, retry after a bad URL, reconnect, keyboard focus, full screen, mobile sizing and YouTube network behavior. Sample sources, edits and licenses are documented in [examples/assets/README.md](https://github.com/genixdev/genix-video/blob/main/examples/assets/README.md).
 
 GitHub Actions runs the existing browser suite in Chromium, plus the JavaScript syntax check, on pushes to main and pull requests. You can also start it manually from the Actions tab. Failed runs include a downloadable report with test results, screenshots and traces. Tests use local media and simulated YouTube APIs, without relying on external services.
 
@@ -301,8 +320,8 @@ Built by [genixdev](https://genixdev.com/), an independent web developer. Need t
 
 The component source, example code and documentation are available under the [MIT License](LICENSE), copyright (c) 2026 genixdev. You may use, modify and redistribute the software, including commercially, while preserving the copyright and license notice.
 
-Demo media are licensed separately: the coast video and its posters use **CC BY 4.0** (Dareful); the waterfall video and its poster use **CC BY-SA 4.0** (Steven Pavlov). Keep the [media credits, source links and license notices](examples/assets/README.md) with redistributed media. The software license does not relicense these videos or posters.
+Demo media are licensed separately: the coast video and its posters use **CC BY 4.0** (Dareful); the waterfall video and its poster use **CC BY-SA 4.0** (Steven Pavlov). Keep the [media credits, source links and license notices](https://github.com/genixdev/genix-video/blob/main/examples/assets/README.md) with redistributed media. The software license does not relicense these videos or posters.
 
 YouTube examples use the project's [coast upload](https://youtu.be/h5D-Meb4u7g) and [vertical waterfall upload](https://youtube.com/shorts/Ez8aBI8yl6U). For vertical YouTube playback, specify `aspect-ratio="9/16"`; the Shorts URL is accepted directly.
 
-Source is maintained in [genixdev/genix-video](https://github.com/genixdev/genix-video); the [public demo](https://genix-video.genixdev.com/examples/) is hosted separately and may not yet reflect the latest repository changes. No package or CDN release has been published. The package remains marked private to prevent accidental registry publication.
+Source is maintained in [genixdev/genix-video](https://github.com/genixdev/genix-video); the [public demo](https://genix-video.genixdev.com/examples/) is hosted separately and may not yet reflect the latest repository changes. The component is also distributed on [npm](https://www.npmjs.com/package/genix-video).
