@@ -2,7 +2,7 @@
 
 Version **1.0.0**. A dependency-free custom element for YouTube and native video: full-width posters, centered uncropped playback and an optional blurred background. One JavaScript file and one stylesheet; no build step, framework, provider system or plugins.
 
-[Live demo](https://gennix-video.genixdev.com/) · [Configuration guide](https://gennix-video.genixdev.com/examples/) · [Download v1.0.0](https://github.com/genixdev/gennix-video/releases/tag/v1.0.0) · [Built by genixdev](https://genixdev.com/)
+[Live demo](https://genix-video.genixdev.com/) · [Configuration guide](https://genix-video.genixdev.com/examples/) · [Download v1.0.0](https://github.com/genixdev/gennix-video/releases/tag/v1.0.0) · [Built by genixdev](https://genixdev.com/)
 
 **MIT licensed.** See [LICENSE](LICENSE). Demo videos and posters have separate [media licenses and credits](examples/assets/README.md). Nothing has been published to a package registry or CDN.
 
@@ -38,15 +38,15 @@ For a native file:
 
 ## Live configuration guide
 
-[Open the live demo and configuration guide](https://gennix-video.genixdev.com/examples/) for installation, all attributes and copyable demos. The same examples are included in [this repository](examples/index.html).
+[Open the live demo and configuration guide](https://genix-video.genixdev.com/examples/) for installation, all attributes and copyable demos. The same examples are included in [this repository](examples/index.html).
 
-- [Playback, buttons, coordination and full screen](https://gennix-video.genixdev.com/examples/options.html)
-- [Height limits](https://gennix-video.genixdev.com/examples/height-limit.html) and [viewport with a header](https://gennix-video.genixdev.com/examples/viewport.html)
-- [Languages and existing site cookies](https://gennix-video.genixdev.com/examples/languages.html)
-- [Explicit autoplay](https://gennix-video.genixdev.com/examples/autoplay.html)
-- [Moving video backgrounds, including vertical YouTube](https://gennix-video.genixdev.com/examples/video-background.html)
-- [Minimal HTML](https://gennix-video.genixdev.com/examples/minimal.html) and [escaped PHP integration](https://gennix-video.genixdev.com/examples/integration.php)
-- [Browser tests](https://gennix-video.genixdev.com/tests/)
+- [Playback, buttons, coordination and full screen](https://genix-video.genixdev.com/examples/options.html)
+- [Height limits](https://genix-video.genixdev.com/examples/height-limit.html) and [viewport with a header](https://genix-video.genixdev.com/examples/viewport.html)
+- [Languages and existing site cookies](https://genix-video.genixdev.com/examples/languages.html)
+- [Explicit autoplay](https://genix-video.genixdev.com/examples/autoplay.html)
+- [Moving video backgrounds, including vertical YouTube](https://genix-video.genixdev.com/examples/video-background.html)
+- [Minimal HTML](https://genix-video.genixdev.com/examples/minimal.html) and [escaped PHP integration](https://genix-video.genixdev.com/examples/integration.php)
+- [Browser tests](https://genix-video.genixdev.com/tests/)
 
 For local development, serve the repository with your existing web server. Alternatively, `php -S localhost:8080` from the repository directory serves both static examples and PHP; open `/examples/`. PHP is only needed for the PHP example. The public site hosts the demos; no versioned package or CDN distribution is provided. For installation, copy the two source files to your own server.
 
@@ -123,7 +123,7 @@ The close × overlays the container and **does not reserve top space or reduce p
 
 ### Moving video background
 
-Use `background="video"` with either provider. [Open the live video-background examples](https://gennix-video.genixdev.com/examples/video-background.html) or inspect their [HTML source](examples/video-background.html).
+Use `background="video"` with either provider. [Open the live video-background examples](https://genix-video.genixdev.com/examples/video-background.html) or inspect their [HTML source](examples/video-background.html).
 
 ```html
 <gennix-video size="fullwidth" aspect-ratio="16/9" max-height="60dvh"
@@ -293,4 +293,4 @@ Demo media are licensed separately: the coast video and its posters use **CC BY 
 
 YouTube examples use the project's [coast upload](https://youtu.be/h5D-Meb4u7g) and [vertical waterfall upload](https://youtube.com/shorts/Ez8aBI8yl6U). For vertical YouTube playback, specify `aspect-ratio="9/16"`; the Shorts URL is accepted directly.
 
-Source is maintained in [genixdev/gennix-video](https://github.com/genixdev/gennix-video); the [public demo](https://gennix-video.genixdev.com/examples/) is hosted separately and may not yet reflect the latest repository changes. No package or CDN release has been published. The package remains marked private to prevent accidental registry publication.
+Source is maintained in [genixdev/gennix-video](https://github.com/genixdev/gennix-video); the [public demo](https://genix-video.genixdev.com/examples/) is hosted separately and may not yet reflect the latest repository changes. No package or CDN release has been published. The package remains marked private to prevent accidental registry publication.

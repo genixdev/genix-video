@@ -16,14 +16,14 @@ function gv_escape($value) {
 <script src="../src/gennix-video.js?v=1.0.0" defer></script>
 <meta name="description" content="Integrate gennix-video into PHP websites with escaped HTML attributes and simple configuration.">
 <meta name="author" content="genixdev">
-<link rel="canonical" href="https://gennix-video.genixdev.com/examples/integration.php">
+<link rel="canonical" href="https://genix-video.genixdev.com/examples/integration.php">
 <link rel="icon" href="assets/favicon.ico" sizes="any">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="gennix-video by genixdev">
 <meta property="og:title" content="gennix-video · PHP integration | genixdev">
 <meta property="og:description" content="Integrate gennix-video into PHP websites with escaped HTML attributes and simple configuration.">
-<meta property="og:url" content="https://gennix-video.genixdev.com/examples/integration.php">
-<meta property="og:image" content="https://gennix-video.genixdev.com/examples/assets/genixdev.png">
+<meta property="og:url" content="https://genix-video.genixdev.com/examples/integration.php">
+<meta property="og:image" content="https://genix-video.genixdev.com/examples/assets/genixdev.png">
 <meta property="og:image:alt" content="genixdev logo">
 <meta name="twitter:card" content="summary">
 </head>
