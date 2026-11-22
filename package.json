@@ -1,10 +1,10 @@
 {
-  "name": "gennix-video",
-  "version": "1.0.0",
+  "name": "genix-video",
+  "version": "1.0.1",
   "private": true,
   "description": "Dependency-free custom element for YouTube and native video",
   "license": "MIT",
   "scripts": {
-    "check": "node --check src/gennix-video.js"
+    "check": "node --check src/genix-video.js"
   }
 }

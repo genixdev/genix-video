@@ -1,13 +1,13 @@
 /*!
- * gennix-video — Video layout, poster backgrounds and accessible controls.
- * Component selectors are scoped to gennix-video; demo styles use gv-demo classes.
+ * genix-video — Video layout, poster backgrounds and accessible controls.
+ * Component selectors are scoped to genix-video; demo styles use gv-demo classes.
  * Copyright (c) 2026 genixdev
  * https://genixdev.com
- * https://github.com/genixdev/gennix-video
+ * https://github.com/genixdev/genix-video
  * SPDX-License-Identifier: MIT
  * See the LICENSE file in the repository root for the full license text.
  */
-gennix-video {
+genix-video {
   display: block;
   position: relative;
   isolation: isolate;
@@ -24,34 +24,34 @@ gennix-video {
   color: #fff;
   font-family: inherit;
 }
-gennix-video[template="hero"] { height: var(--gv-attr-height, var(--gv-height, 32rem)); }
+genix-video[template="hero"] { height: var(--gv-attr-height, var(--gv-height, 32rem)); }
 /* Use the parent width and the declared ratio unless an explicit limit is set. */
-gennix-video[size="fullwidth"],
-gennix-video:not([size]):not([template="hero"]) {
+genix-video[size="fullwidth"],
+genix-video:not([size]):not([template="hero"]) {
   width: 100%;
   max-width: 100%;
   height: auto;
   min-height: 0;
   max-height: var(--gv-limited-height, none);
 }
-gennix-video[size="viewport"] {
+genix-video[size="viewport"] {
   width: 100%;
   max-width: 100%;
   height: max(0px, calc(100vh - var(--gv-attr-viewport-offset, var(--gv-viewport-offset, 0px))));
 }
 @supports (height: 100dvh) {
-  gennix-video[size="viewport"] { height: max(0px, calc(100dvh - var(--gv-attr-viewport-offset, var(--gv-viewport-offset, 0px)))); }
+  genix-video[size="viewport"] { height: max(0px, calc(100dvh - var(--gv-attr-viewport-offset, var(--gv-viewport-offset, 0px)))); }
 }
 
 /* Subtract the offset from the limit, not from the ratio-derived height. */
-gennix-video[max-height] {
+genix-video[max-height] {
   min-height: 0;
   --gv-limited-height: max(0px, calc(var(--gv-attr-max-height) - var(--gv-attr-viewport-offset, 0px)));
 }
-gennix-video[background="none"] { background: transparent; }
-gennix-video *, gennix-video *::before, gennix-video *::after { box-sizing: border-box; }
-gennix-video [hidden] { display: none !important; }
-gennix-video .gv-background {
+genix-video[background="none"] { background: transparent; }
+genix-video *, genix-video *::before, genix-video *::after { box-sizing: border-box; }
+genix-video [hidden] { display: none !important; }
+genix-video .gv-background {
   display: none;
   position: absolute;
   inset: calc(-2 * var(--gv-blur, 20px) - 2px);
@@ -60,15 +60,15 @@ gennix-video .gv-background {
   filter: blur(var(--gv-blur, 20px));
   pointer-events: none;
 }
-gennix-video[template="hero"]:not([background]) .gv-background,
-gennix-video[size="custom"]:not([background]) .gv-background,
-gennix-video[size="viewport"]:not([background]) .gv-background,
-gennix-video[background="video"] .gv-background,
-gennix-video[background="poster"] .gv-background { display: block; }
+genix-video[template="hero"]:not([background]) .gv-background,
+genix-video[size="custom"]:not([background]) .gv-background,
+genix-video[size="viewport"]:not([background]) .gv-background,
+genix-video[background="video"] .gv-background,
+genix-video[background="poster"] .gv-background { display: block; }
 
 /* Decorative motion uses cover; the foreground player remains contained. */
-gennix-video[background="video"] .gv-background { container-type: size; }
-gennix-video .gv-background-player {
+genix-video[background="video"] .gv-background { container-type: size; }
+genix-video .gv-background-player {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -80,18 +80,18 @@ gennix-video .gv-background-player {
   pointer-events: none;
   opacity: 0;
 }
-gennix-video iframe.gv-background-player {
+genix-video iframe.gv-background-player {
   width: max(100cqw, calc(100cqh * var(--gv-ratio, 1.777777778)));
   height: max(100cqh, calc(100cqw / var(--gv-ratio, 1.777777778)));
 }
-gennix-video .gv-background-player[data-gv-visible] { opacity: 1; }
-gennix-video .gv-background::after {
+genix-video .gv-background-player[data-gv-visible] { opacity: 1; }
+genix-video .gv-background::after {
   content: '';
   position: absolute;
   inset: 0;
   background: rgb(0 0 0 / var(--gv-dim, 35%));
 }
-gennix-video .gv-poster {
+genix-video .gv-poster {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -99,15 +99,15 @@ gennix-video .gv-poster {
   object-fit: var(--gv-poster-fit, cover);
   object-position: var(--gv-poster-position, center);
 }
-gennix-video[data-gv-active] .gv-poster { visibility: hidden; }
-gennix-video .gv-stage {
+genix-video[data-gv-active] .gv-poster { visibility: hidden; }
+genix-video .gv-stage {
   position: absolute;
   inset: 0;
   container-type: size;
   display: grid;
   place-items: center;
 }
-gennix-video .gv-player {
+genix-video .gv-player {
   display: block;
   width: min(100cqw, calc(100cqh * var(--gv-ratio, 1.777777778)));
   height: min(100cqh, calc(100cqw / var(--gv-ratio, 1.777777778)));
@@ -116,9 +116,9 @@ gennix-video .gv-player {
   background: #000;
   visibility: hidden;
 }
-gennix-video[data-gv-active] .gv-player { visibility: visible; }
+genix-video[data-gv-active] .gv-player { visibility: visible; }
 /* Cover is native-only: never crop a YouTube iframe. */
-gennix-video[provider="native"][fit="cover"] .gv-player {
+genix-video[provider="native"][fit="cover"] .gv-player {
   width: 100cqw;
   height: 100cqh;
   min-width: 0;
@@ -126,7 +126,7 @@ gennix-video[provider="native"][fit="cover"] .gv-player {
   object-fit: cover;
   object-position: var(--gv-video-position, center);
 }
-gennix-video .gv-play {
+genix-video .gv-play {
   z-index: 2;
   position: absolute;
   top: 50%;
@@ -145,28 +145,28 @@ gennix-video .gv-play {
   cursor: pointer;
   box-shadow: 0 4px 32px #0004;
 }
-gennix-video .gv-play:hover {
+genix-video .gv-play:hover {
   background: var(--gv-attr-button-hover-background, var(--gv-button-hover-background, #e3f5a4));
   color: var(--gv-attr-button-hover-color, var(--gv-button-hover-color, #172026));
 }
-gennix-video .gv-play:focus-visible {
+genix-video .gv-play:focus-visible {
   background: var(--gv-attr-button-focus-background, var(--gv-button-focus-background, #e3f5a4));
   color: var(--gv-attr-button-focus-color, var(--gv-button-focus-color, #172026));
 }
-gennix-video .gv-play:focus-visible, gennix-video .gv-player:focus-visible {
+genix-video .gv-play:focus-visible, genix-video .gv-player:focus-visible {
   outline: 3px solid #c7f56b;
   outline-offset: -5px;
 }
-gennix-video .gv-play[aria-disabled="true"] { cursor: wait; opacity: .8; }
-gennix-video .gv-play:disabled { cursor: not-allowed; opacity: .55; }
-gennix-video .gv-play-icon {
+genix-video .gv-play[aria-disabled="true"] { cursor: wait; opacity: .8; }
+genix-video .gv-play:disabled { cursor: not-allowed; opacity: .55; }
+genix-video .gv-play-icon {
   width: 0;
   height: 0;
   border-top: calc(var(--gv-button-icon-size, 12px) / 2) solid transparent;
   border-bottom: calc(var(--gv-button-icon-size, 12px) / 2) solid transparent;
   border-left: calc(var(--gv-button-icon-size, 12px) * .833333) solid currentColor;
 }
-gennix-video .gv-toolbar {
+genix-video .gv-toolbar {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -178,7 +178,7 @@ gennix-video .gv-toolbar {
   padding: 4px 8px;
   background: #151b21;
 }
-gennix-video .gv-fullscreen {
+genix-video .gv-fullscreen {
   min-height: 40px;
   padding: .5rem 1rem;
   border: 1px solid #9aa8af;
@@ -188,12 +188,12 @@ gennix-video .gv-fullscreen {
   font: 500 .875rem system-ui, sans-serif;
   cursor: pointer;
 }
-gennix-video .gv-fullscreen:focus-visible { outline: 3px solid #c7f56b; outline-offset: -3px; }
-gennix-video .gv-fullscreen:disabled { opacity: .5; cursor: not-allowed; }
+genix-video .gv-fullscreen:focus-visible { outline: 3px solid #c7f56b; outline-offset: -3px; }
+genix-video .gv-fullscreen:disabled { opacity: .5; cursor: not-allowed; }
 
 /* Close overlays the container without reducing the available video height. */
-gennix-video[data-gv-close] .gv-stage { top: 0px; }
-gennix-video .gv-close {
+genix-video[data-gv-close] .gv-stage { top: 0px; }
+genix-video .gv-close {
   position: absolute;
   top: 2px;
   right: 4px;
@@ -208,13 +208,13 @@ gennix-video .gv-close {
   font: 400 26px/1 system-ui, sans-serif;
   cursor: pointer;
 }
-gennix-video .gv-close:hover { background: #151b21; }
-gennix-video .gv-close:focus-visible { outline: 3px solid #c7f56b; outline-offset: -3px; }
-gennix-video[data-gv-fullscreen] .gv-stage { bottom: 48px; }
-gennix-video[data-gv-fullscreen] .gv-play { top: calc(50% - 24px); }
-gennix-video[data-gv-fullscreen] .gv-status { bottom: 60px; }
+genix-video .gv-close:hover { background: #151b21; }
+genix-video .gv-close:focus-visible { outline: 3px solid #c7f56b; outline-offset: -3px; }
+genix-video[data-gv-fullscreen] .gv-stage { bottom: 48px; }
+genix-video[data-gv-fullscreen] .gv-play { top: calc(50% - 24px); }
+genix-video[data-gv-fullscreen] .gv-status { bottom: 60px; }
 /* Full screen overrides all configured size modes. */
-gennix-video:fullscreen {
+genix-video:fullscreen {
   width: 100vw !important;
   height: 100vh !important;
   height: 100dvh !important;
@@ -223,7 +223,7 @@ gennix-video:fullscreen {
   min-height: 0 !important;
   background-color: #151b21;
 }
-gennix-video .gv-status {
+genix-video .gv-status {
   position: absolute;
   bottom: 1rem;
   left: 50%;
@@ -239,7 +239,7 @@ gennix-video .gv-status {
   text-align: center;
 }
 /* Keep status messages from covering active player controls. */
-gennix-video[data-gv-active] .gv-status {
+genix-video[data-gv-active] .gv-status {
   position: static;
   transform: none;
   width: auto;

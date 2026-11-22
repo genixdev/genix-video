@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1 — 2026-11-22
+
+- Unify the project name as genix-video: custom element, source files, events, examples and repository links.
+- Use https://genix-video.genixdev.com/ for the hosted demo.
+- Update integrations to <genix-video>, src/genix-video.js, src/genix-video.css and genix:* events.
+
 ## 1.0.0 — 2026-11-22
 
 First public release. Includes the complete component, configuration guide and browser tests.

@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>gennix-video · Browser tests</title>
+  <title>genix-video · Browser tests</title>
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="../src/gennix-video.css?v=1.0.0">
-  <script src="../src/gennix-video.js?v=1.0.0" defer></script>
+  <link rel="stylesheet" href="../src/genix-video.css?v=1.0.1">
+  <script src="../src/genix-video.js?v=1.0.1" defer></script>
 </head>
 <body class="gv-demo">
   <main class="gv-demo-section">
@@ -41,7 +41,7 @@
         return error;
       };
       function create(provider = 'native', src = '../examples/assets/sample.mp4', attributes = {}, button = null) {
-        const video = document.createElement('gennix-video');
+        const video = document.createElement('genix-video');
         video.className = 'gv-demo-test';
         video.setAttribute('provider', provider);
         video.setAttribute('src', src);
@@ -85,23 +85,23 @@
           const video = create();
           const seen = [];
           let bubbled = false;
-          for (const name of ['ready', 'play']) video.addEventListener('gennix:' + name, e => seen.push(e.type));
-          fixture.addEventListener('gennix:play', e => { bubbled = e.detail.provider === 'native' && e.detail.state === 'playing'; }, {once:true});
+          for (const name of ['ready', 'play']) video.addEventListener('genix:' + name, e => seen.push(e.type));
+          fixture.addEventListener('genix:play', e => { bubbled = e.detail.provider === 'native' && e.detail.state === 'playing'; }, {once:true});
           const first = video.play();
           assert(first === video.play(), 'Promises are not shared.');
           await first;
           assert(video.state === 'playing' && video.querySelector('video').currentTime >= 0, 'Playback has not started.');
           assert(video.querySelectorAll('video').length === 1, 'Duplicate videos.');
-          assert(seen.join(',') === 'gennix:ready,gennix:play' && bubbled, 'Incorrect event order, duplication or bubbling.');
+          assert(seen.join(',') === 'genix:ready,genix:play' && bubbled, 'Incorrect event order, duplication or bubbling.');
           await video.play();
           assert(seen.length === 2, 'play() duplicated an event while already playing.');
         });
         await test('Pause and resume preserve the player without repeating ready', async () => {
           const video = create();
           let ready = 0, pauses = 0, plays = 0;
-          video.addEventListener('gennix:ready', () => ready++);
-          video.addEventListener('gennix:pause', () => pauses++);
-          video.addEventListener('gennix:play', () => plays++);
+          video.addEventListener('genix:ready', () => ready++);
+          video.addEventListener('genix:pause', () => pauses++);
+          video.addEventListener('genix:play', () => plays++);
           await video.play();
           const player = video.querySelector('video');
           video.pause();
@@ -145,7 +145,7 @@
           const bad = create('native', 'archivo-inexistente.mp4');
           let errors = 0;
           let detail;
-          bad.addEventListener('gennix:error', e => { errors++; detail = e.detail; });
+          bad.addEventListener('genix:error', e => { errors++; detail = e.detail; });
           await good.play();
           await rejection(bad.play());
           assert(bad.state === 'error' && errors === 1 && detail.error.message && detail.error.code, 'Expected one useful error.');
@@ -159,7 +159,7 @@
           const originalPlay = HTMLMediaElement.prototype.play;
           const video = create();
           let plays = 0;
-          video.addEventListener('gennix:play', () => plays++);
+          video.addEventListener('genix:play', () => plays++);
           try {
             HTMLMediaElement.prototype.play = function () {
               return Promise.reject(new DOMException('Simulated rejection for this test.', 'NotAllowedError'));
@@ -174,7 +174,7 @@
         await test('Real completion emits ended once and preserves the player', async () => {
           const video = create();
           let ended = 0;
-          video.addEventListener('gennix:ended', () => ended++);
+          video.addEventListener('genix:ended', () => ended++);
           await video.play();
           const player = video.querySelector('video');
           player.currentTime = player.duration - .2;
@@ -184,15 +184,15 @@
           assert(video.state === 'playing', 'Cannot replay after completion.');
         });
         await test('Including the script twice does not register the element again', async () => {
-          const registered = customElements.get('gennix-video');
+          const registered = customElements.get('genix-video');
           await new Promise((resolve, reject) => {
             const script = document.createElement('script');
-            script.src = '../src/gennix-video.js';
+            script.src = '../src/genix-video.js';
             script.onload = resolve;
             script.onerror = reject;
             document.head.append(script);
           });
-          assert(customElements.get('gennix-video') === registered, 'The registration changed.');
+          assert(customElements.get('genix-video') === registered, 'The registration changed.');
           const video = create();
           await video.play();
         });
@@ -372,7 +372,7 @@
         await test('Completion can restore the poster after emitting ended', async () => {
           const video = create('native','../examples/assets/sample.mp4',{'on-end':'poster'});
           let ended = 0;
-          video.addEventListener('gennix:ended', () => ended++);
+          video.addEventListener('genix:ended', () => ended++);
           await video.play();
           const player = video.querySelector('video');
           player.currentTime = player.duration - .2;
@@ -464,7 +464,7 @@
           assert(video.querySelector('.gv-status').textContent === 'Loading', 'Loading label not translated.');
           await pending;
           const player = video.querySelector('video');
-          let changes = 0; video.addEventListener('gennix:statechange',()=>changes++);
+          let changes = 0; video.addEventListener('genix:statechange',()=>changes++);
           video.setAttribute('lang','fr'); video.refreshLanguage();
           assert(video.querySelector('video') === player && changes === 0, 'Refresh changed player or state.');
           const button = document.createElement('button'); button.setAttribute('data-gv-play',''); button.textContent='My content';
@@ -531,7 +531,7 @@
           const original = HTMLMediaElement.prototype.play;
           const video = create('native','../examples/assets/sample.mp4',{background:'video'});
           let errors = 0;
-          video.addEventListener('gennix:error', () => errors++);
+          video.addEventListener('genix:error', () => errors++);
           try {
             HTMLMediaElement.prototype.play = function () {
               return this.classList.contains('gv-background-player')
@@ -591,7 +591,7 @@
             assert(background.muted && background.plays === 0 && background.paused, 'Late readiness restarted playback.');
             await video.play();
             await until(() => background.node.hasAttribute('data-gv-visible'));
-            let errors=0; video.addEventListener('gennix:error',()=>errors++);
+            let errors=0; video.addEventListener('genix:error',()=>errors++);
             background.events.onError({target:background,data:100});
             assert(background.destroyed && video.state === 'playing' && errors === 0, 'Decorative failure affected main player.');
             video.reset();

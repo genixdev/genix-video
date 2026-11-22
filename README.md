@@ -1,8 +1,8 @@
-# gennix-video
+# genix-video
 
-Version **1.0.0**. A dependency-free custom element for YouTube and native video: full-width posters, centered uncropped playback and an optional blurred background. One JavaScript file and one stylesheet; no build step, framework, provider system or plugins.
+Version **1.0.1**. A dependency-free custom element for YouTube and native video: full-width posters, centered uncropped playback and an optional blurred background. One JavaScript file and one stylesheet; no build step, framework, provider system or plugins.
 
-[Live demo](https://genix-video.genixdev.com/) · [Configuration guide](https://genix-video.genixdev.com/examples/) · [Download v1.0.0](https://github.com/genixdev/gennix-video/releases/tag/v1.0.0) · [Built by genixdev](https://genixdev.com/)
+[Live demo](https://genix-video.genixdev.com/) · [Configuration guide](https://genix-video.genixdev.com/examples/) · [Download v1.0.1](https://github.com/genixdev/genix-video/releases/tag/v1.0.1) · [Built by genixdev](https://genixdev.com/)
 
 **MIT licensed.** See [LICENSE](LICENSE). Demo videos and posters have separate [media licenses and credits](examples/assets/README.md). Nothing has been published to a package registry or CDN.
 
@@ -10,20 +10,20 @@ Version **1.0.0**. A dependency-free custom element for YouTube and native video
 
 Download the release or clone this repository. The examples and tests are optional; the component only needs the two files in `src/` and its license notice.
 
-Copy `src/gennix-video.js` and `src/gennix-video.css` to your web server. Add these tags to your page, adjusting paths to your installation:
+Copy `src/genix-video.js` and `src/genix-video.css` to your web server. Add these tags to your page, adjusting paths to your installation:
 
 ```html
-<link rel="stylesheet" href="/gennix-video/src/gennix-video.css">
-<script src="/gennix-video/src/gennix-video.js" defer></script>
+<link rel="stylesheet" href="/genix-video/src/genix-video.css">
+<script src="/genix-video/src/genix-video.js" defer></script>
 ```
 
 Then add a video:
 
 ```html
-<gennix-video size="fullwidth" aspect-ratio="16/9"
+<genix-video size="fullwidth" aspect-ratio="16/9"
   max-height="80dvh" background="poster"
   provider="youtube" src="h5D-Meb4u7g">
-</gennix-video>
+</genix-video>
 ```
 
 Serve through HTTP(S), not `file://`. Native sources and posters resolve relative to the HTML document. Include the stylesheet and script once; repeated script inclusion is guarded. No npm install is required. Keep the custom button inside the element before initialization; using the deferred script above ensures normal parsed HTML is ready.
@@ -31,9 +31,9 @@ Serve through HTTP(S), not `file://`. Native sources and posters resolve relativ
 For a native file:
 
 ```html
-<gennix-video provider="native" src="/media/video.mp4"
+<genix-video provider="native" src="/media/video.mp4"
   poster="/media/poster.jpg" size="fullwidth" aspect-ratio="16/9">
-</gennix-video>
+</genix-video>
 ```
 
 ## Live configuration guide
@@ -106,11 +106,11 @@ Boolean attributes accept an empty value or `true` as true, `false` as false. Mi
 Fullwidth height is width × ratio denominator ÷ numerator: 1920px at 16/9 gives 1080px. `max-height="80dvh"` caps that height without reducing width. `max-height="100dvh" viewport-offset="80"` caps it at visible viewport height minus 80px. `dvh` follows mobile browser bars; `svh` uses the smaller viewport with bars visible; `vh` is the traditional unit. A height cap does not remove scrolling caused by other page content.
 
 ```html
-<gennix-video size="custom" width="900" height="500"
-  provider="youtube" src="h5D-Meb4u7g" background="poster"></gennix-video>
+<genix-video size="custom" width="900" height="500"
+  provider="youtube" src="h5D-Meb4u7g" background="poster"></genix-video>
 
-<gennix-video size="viewport" viewport-offset="80"
-  provider="youtube" src="h5D-Meb4u7g"></gennix-video>
+<genix-video size="viewport" viewport-offset="80"
+  provider="youtube" src="h5D-Meb4u7g"></genix-video>
 ```
 
 Custom width shrinks to fit its parent, but a fixed height stays fixed. Use height=auto for a ratio-derived height. Fullwidth ignores legacy width/height CSS limits unless the explicit max-height attribute is present. Real full screen overrides size limits.
@@ -126,16 +126,16 @@ The close × overlays the container and **does not reserve top space or reduce p
 Use `background="video"` with either provider. [Open the live video-background examples](https://genix-video.genixdev.com/examples/video-background.html) or inspect their [HTML source](examples/video-background.html).
 
 ```html
-<gennix-video size="fullwidth" aspect-ratio="16/9" max-height="60dvh"
-  provider="youtube" src="h5D-Meb4u7g" background="video"></gennix-video>
+<genix-video size="fullwidth" aspect-ratio="16/9" max-height="60dvh"
+  provider="youtube" src="h5D-Meb4u7g" background="video"></genix-video>
 
-<gennix-video size="custom" width="100%" height="420"
+<genix-video size="custom" width="100%" height="420"
   provider="native" src="video.mp4" poster="poster.jpg"
-  background="video"></gennix-video>
+  background="video"></genix-video>
 
-<gennix-video size="custom" width="100%" height="420" aspect-ratio="9/16"
+<genix-video size="custom" width="100%" height="420" aspect-ratio="9/16"
   provider="youtube" src="https://youtube.com/shorts/Ez8aBI8yl6U"
-  background="video"></gennix-video>
+  background="video"></genix-video>
 ```
 
 A second muted copy covers the background, with the same blur/dimming settings as the static poster. It is decorative, has no controls or pointer interaction, and is excluded from keyboard focus and accessibility navigation. The foreground remains contained and is the only source of public playback events.
@@ -157,11 +157,11 @@ Sizes update live without replacing the player. Language changes are described b
 ### Custom buttons
 
 ```html
-<gennix-video provider="native" src="/media/video.mp4">
+<genix-video provider="native" src="/media/video.mp4">
   <button type="button" data-gv-play aria-label="Watch our story">
     <span aria-hidden="true">▶</span><strong>Watch our story</strong>
   </button>
-</gennix-video>
+</genix-video>
 ```
 
 The element reuses this button without replacing its children. Its content and accessible label belong to the website; translation attributes affect the generated button only. Enter and Space work normally. Text is rendered through textContent, not configurable HTML.
@@ -169,10 +169,10 @@ The element reuses this button without replacing its children. Its content and a
 ## Languages and existing cookies
 
 ```html
-<gennix-video lang-cookie="SETLANG" provider="youtube" src="h5D-Meb4u7g"
+<genix-video lang-cookie="SETLANG" provider="youtube" src="h5D-Meb4u7g"
   playlabel="Watch video" playlabel-en="Play" playlabel-es="Reproducir"
   playlabel-fr="Lire" playlabel-it="Riproduci" playlabel-de="Abspielen">
-</gennix-video>
+</genix-video>
 ```
 
 The component **never creates or modifies cookies** and does not poll them. A valid explicit lang wins. Otherwise, if lang-cookie is set, only that cookie is read. A missing, invalid or inaccessible cookie selects default text rather than the document language. Without lang-cookie or a valid explicit lang, document.documentElement.lang is used.
@@ -181,7 +181,7 @@ For each text: regional attribute → base-language attribute → unsuffixed att
 
 ```js
 // After your website changes its existing language cookie:
-document.querySelectorAll('gennix-video').forEach(video => video.refreshLanguage());
+document.querySelectorAll('genix-video').forEach(video => video.refreshLanguage());
 ```
 
 lang, lang-cookie and base text attributes refresh automatically. Call refreshLanguage() after changing suffixed attributes or the document language. Refreshing never reloads or pauses media. Cookies must be readable by JavaScript on the current domain/path; HttpOnly cookies cannot be read. Malformed encoded values safely fall back. The demo selector changes lang, never a cookie.
@@ -191,8 +191,8 @@ These labels do not translate YouTube/native controls. The close icon has an int
 ## JavaScript API
 
 ```js
-await customElements.whenDefined('gennix-video');
-const video = document.querySelector('gennix-video');
+await customElements.whenDefined('genix-video');
+const video = document.querySelector('genix-video');
 try {
   await video.play(); // Resolves only when playback actually starts.
 } catch (error) {
@@ -217,17 +217,17 @@ All events bubble, are not cancelable and contain `{ state, provider, src }` in 
 
 | Event | Additional information |
 | --- | --- |
-| `gennix:statechange` | previousState. Not emitted for initial idle. |
-| `gennix:ready` | Once per loaded player (native loadeddata or YouTube onReady). |
-| `gennix:play` | Confirmed start/resume, not duplicate buffering. |
-| `gennix:pause` | Confirmed pause. |
-| `gennix:ended` | Confirmed end; emitted before reset for on-end=poster. |
-| `gennix:error` | error: { name, message, code }. Original provider error code where available. |
+| `genix:statechange` | previousState. Not emitted for initial idle. |
+| `genix:ready` | Once per loaded player (native loadeddata or YouTube onReady). |
+| `genix:play` | Confirmed start/resume, not duplicate buffering. |
+| `genix:pause` | Confirmed pause. |
+| `genix:ended` | Confirmed end; emitted before reset for on-end=poster. |
+| `genix:error` | error: { name, message, code }. Original provider error code where available. |
 
-Cancellation, autoplay policy rejection and full-screen denial do not emit gennix:error. User-visible errors use errorlabel; diagnostic details remain in the event. Buffering retains the player and avoids placing status text over its controls.
+Cancellation, autoplay policy rejection and full-screen denial do not emit genix:error. User-visible errors use errorlabel; diagnostic details remain in the event. Buffering retains the player and avoids placing status text over its controls.
 
 ```js
-document.addEventListener('gennix:error', event => {
+document.addEventListener('genix:error', event => {
   console.error(event.target, event.detail.error);
 });
 ```
@@ -276,7 +276,7 @@ Requires modern Custom Elements, AbortController event listeners, CSS size conta
 
 - No blur visible: use background=poster and a box ratio that leaves space around the contained player.
 - Unexpected height: fullwidth fills its parent; use max-height and inspect the parent's width. A header is not measured automatically.
-- YouTube fails: inspect gennix:error and network access. Embedding restrictions, ads and third-party policy remain under YouTube's control. It recommends a minimum 200×200 player viewport; a small contained player can be smaller.
+- YouTube fails: inspect genix:error and network access. Embedding restrictions, ads and third-party policy remain under YouTube's control. It recommends a minimum 200×200 player viewport; a small contained player can be smaller.
 - No cookie translation: confirm the exact cookie name, JavaScript accessibility and matching suffixed attribute. A configured missing cookie uses default text.
 - No autoplay: try muted=true; keep a manual activation path.
 - Keep the referrer policy compatible with YouTube. Do not strip all referrer information from embeds.
@@ -293,4 +293,4 @@ Demo media are licensed separately: the coast video and its posters use **CC BY 
 
 YouTube examples use the project's [coast upload](https://youtu.be/h5D-Meb4u7g) and [vertical waterfall upload](https://youtube.com/shorts/Ez8aBI8yl6U). For vertical YouTube playback, specify `aspect-ratio="9/16"`; the Shorts URL is accepted directly.
 
-Source is maintained in [genixdev/gennix-video](https://github.com/genixdev/gennix-video); the [public demo](https://genix-video.genixdev.com/examples/) is hosted separately and may not yet reflect the latest repository changes. No package or CDN release has been published. The package remains marked private to prevent accidental registry publication.
+Source is maintained in [genixdev/genix-video](https://github.com/genixdev/genix-video); the [public demo](https://genix-video.genixdev.com/examples/) is hosted separately and may not yet reflect the latest repository changes. No package or CDN release has been published. The package remains marked private to prevent accidental registry publication.

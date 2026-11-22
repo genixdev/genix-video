@@ -1,15 +1,15 @@
 /*!
- * gennix-video — Dependency-free YouTube and native video custom element.
+ * genix-video — Dependency-free YouTube and native video custom element.
  * Handles lazy loading, playback, sizing, backgrounds and translated controls.
  * Copyright (c) 2026 genixdev
  * https://genixdev.com
- * https://github.com/genixdev/gennix-video
+ * https://github.com/genixdev/genix-video
  * SPDX-License-Identifier: MIT
  * See the LICENSE file in the repository root for the full license text.
  */
 (() => {
   'use strict';
-  if (customElements.get('gennix-video')) return;
+  if (customElements.get('genix-video')) return;
 
   const texts = {
     playlabel: 'Play', loadinglabel: 'Loading video…',
@@ -139,7 +139,7 @@
     return new DOMException('The playback request was cancelled.', 'AbortError');
   }
 
-  class GennixVideo extends HTMLElement {
+  class GenixVideo extends HTMLElement {
     static get observedAttributes() { return ['size', 'width', 'height', 'max-height', 'viewport-offset', 'aspect-ratio', 'lang', 'lang-cookie', ...Object.keys(texts)]; }
 
     get state() { return this._state || 'idle'; }
@@ -425,7 +425,7 @@
     }
 
     _emit(name, extra = {}) {
-      this.dispatchEvent(new CustomEvent('gennix:' + name, {
+      this.dispatchEvent(new CustomEvent('genix:' + name, {
         bubbles: true,
         detail: { state: this.state, provider: this._provider, src: this._src, ...extra }
       }));
@@ -838,6 +838,6 @@
     }
   }
 
-  customElements.define('gennix-video', GennixVideo);
+  customElements.define('genix-video', GenixVideo);
 })();
 

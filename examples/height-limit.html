@@ -4,30 +4,30 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<title>gennix-video · Height limits | genixdev</title>
+<title>genix-video · Height limits | genixdev</title>
 
-<link rel="stylesheet" href="../src/gennix-video.css?v=1.0.0">
-<script src="../src/gennix-video.js?v=1.0.0" defer></script>
-<meta name="description" content="Build responsive video heroes with max-height, mobile viewport units and centered playback using gennix-video.">
+<link rel="stylesheet" href="../src/genix-video.css?v=1.0.1">
+<script src="../src/genix-video.js?v=1.0.1" defer></script>
+<meta name="description" content="Build responsive video heroes with max-height, mobile viewport units and centered playback using genix-video.">
 <meta name="author" content="genixdev">
 <link rel="canonical" href="https://genix-video.genixdev.com/examples/height-limit.html">
 <link rel="icon" href="assets/favicon.ico" sizes="any">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="gennix-video by genixdev">
-<meta property="og:title" content="gennix-video · Height limits | genixdev">
-<meta property="og:description" content="Build responsive video heroes with max-height, mobile viewport units and centered playback using gennix-video.">
+<meta property="og:site_name" content="genix-video by genixdev">
+<meta property="og:title" content="genix-video · Height limits | genixdev">
+<meta property="og:description" content="Build responsive video heroes with max-height, mobile viewport units and centered playback using genix-video.">
 <meta property="og:url" content="https://genix-video.genixdev.com/examples/height-limit.html">
 <meta property="og:image" content="https://genix-video.genixdev.com/examples/assets/genixdev.png">
 <meta property="og:image:alt" content="genixdev logo">
 <meta name="twitter:card" content="summary">
 </head>
 <body class="gv-demo">
-<header class="gv-demo-header"><strong>gennix-video</strong><a href="index.html">Configuration guide</a><span class="gv-demo-badge">1.0.0</span></header>
-<main><gennix-video id="limited-video" size="fullwidth" aspect-ratio="16/9" max-height="80dvh" background="poster" provider="youtube" src="h5D-Meb4u7g"></gennix-video><section class="gv-demo-section"><h1>Full width.<br>Limited height.</h1><p>The box follows 16/9 until it reaches 80% of the visible viewport height. The contained video uses the whole available height when height is the limiting dimension. The close icon adds no top margin.</p><pre><code>&lt;gennix-video size=&quot;fullwidth&quot; aspect-ratio=&quot;16/9&quot;
+<header class="gv-demo-header"><strong>genix-video</strong><a href="index.html">Configuration guide</a><span class="gv-demo-badge">1.0.1</span></header>
+<main><genix-video id="limited-video" size="fullwidth" aspect-ratio="16/9" max-height="80dvh" background="poster" provider="youtube" src="h5D-Meb4u7g"></genix-video><section class="gv-demo-section"><h1>Full width.<br>Limited height.</h1><p>The box follows 16/9 until it reaches 80% of the visible viewport height. The contained video uses the whole available height when height is the limiting dimension. The close icon adds no top margin.</p><pre><code>&lt;genix-video size=&quot;fullwidth&quot; aspect-ratio=&quot;16/9&quot;
   max-height=&quot;80dvh&quot; background=&quot;poster&quot;
   provider=&quot;youtube&quot; src=&quot;h5D-Meb4u7g&quot;&gt;
-&lt;/gennix-video&gt;</code></pre></section><section class="gv-demo-section"><h2>Subtract a header</h2><p>The height cap is the visible viewport minus 80 pixels. The offset is subtracted from the cap, not from the ratio-derived height.</p><pre><code>&lt;gennix-video size=&quot;fullwidth&quot; aspect-ratio=&quot;16/9&quot; max-height=&quot;100dvh&quot; viewport-offset=&quot;80&quot; background=&quot;poster&quot; provider=&quot;youtube&quot; src=&quot;h5D-Meb4u7g&quot;&gt;&lt;/gennix-video&gt;</code></pre><gennix-video size="fullwidth" aspect-ratio="16/9" max-height="100dvh" viewport-offset="80" background="poster" provider="youtube" src="h5D-Meb4u7g"></gennix-video></section><section class="gv-demo-section"><h2>A pixel limit</h2><p>Also supports px, vh and svh. dvh follows mobile browser bars; svh stays at the smaller visible viewport. Without a limit, fullwidth follows its ratio.</p><pre><code>&lt;gennix-video size=&quot;fullwidth&quot; aspect-ratio=&quot;16/9&quot; max-height=&quot;400&quot; background=&quot;poster&quot; provider=&quot;native&quot; src=&quot;assets/sample.mp4&quot; poster=&quot;assets/sample-poster.jpg&quot;&gt;&lt;/gennix-video&gt;</code></pre><gennix-video size="fullwidth" aspect-ratio="16/9" max-height="400" background="poster" provider="native" src="assets/sample.mp4" poster="assets/sample-poster.jpg"></gennix-video></section></main>
-<footer class="gv-demo-footer"><a href="../README.md">README</a><a href="../tests/">Browser tests</a><a href="../LICENSE">MIT license</a><a href="assets/README.md">Media credits</a><p class="gv-demo-contact">Need a video integration or a custom website? <a href="https://genixdev.com/">Work with genixdev</a>.</p><a href="https://genixdev.com/">Built by genixdev</a><a href="https://github.com/genixdev/gennix-video">View on GitHub</a></footer>
+&lt;/genix-video&gt;</code></pre></section><section class="gv-demo-section"><h2>Subtract a header</h2><p>The height cap is the visible viewport minus 80 pixels. The offset is subtracted from the cap, not from the ratio-derived height.</p><pre><code>&lt;genix-video size=&quot;fullwidth&quot; aspect-ratio=&quot;16/9&quot; max-height=&quot;100dvh&quot; viewport-offset=&quot;80&quot; background=&quot;poster&quot; provider=&quot;youtube&quot; src=&quot;h5D-Meb4u7g&quot;&gt;&lt;/genix-video&gt;</code></pre><genix-video size="fullwidth" aspect-ratio="16/9" max-height="100dvh" viewport-offset="80" background="poster" provider="youtube" src="h5D-Meb4u7g"></genix-video></section><section class="gv-demo-section"><h2>A pixel limit</h2><p>Also supports px, vh and svh. dvh follows mobile browser bars; svh stays at the smaller visible viewport. Without a limit, fullwidth follows its ratio.</p><pre><code>&lt;genix-video size=&quot;fullwidth&quot; aspect-ratio=&quot;16/9&quot; max-height=&quot;400&quot; background=&quot;poster&quot; provider=&quot;native&quot; src=&quot;assets/sample.mp4&quot; poster=&quot;assets/sample-poster.jpg&quot;&gt;&lt;/genix-video&gt;</code></pre><genix-video size="fullwidth" aspect-ratio="16/9" max-height="400" background="poster" provider="native" src="assets/sample.mp4" poster="assets/sample-poster.jpg"></genix-video></section></main>
+<footer class="gv-demo-footer"><a href="../README.md">README</a><a href="../tests/">Browser tests</a><a href="../LICENSE">MIT license</a><a href="assets/README.md">Media credits</a><p class="gv-demo-contact">Need a video integration or a custom website? <a href="https://genixdev.com/">Work with genixdev</a>.</p><a href="https://genixdev.com/">Built by genixdev</a><a href="https://github.com/genixdev/genix-video">View on GitHub</a></footer>
 <script>
 
 </script>
