@@ -270,6 +270,18 @@ Open tests/index.html through HTTP and click Run tests. Tests use native sample 
 
 Manually verify Play/pause/reset, close during loading, retry after a bad URL, reconnect, keyboard focus, full screen, mobile sizing and YouTube network behavior. Sample sources, edits and licenses are documented in [examples/assets/README.md](examples/assets/README.md).
 
+GitHub Actions runs the existing browser suite in Chromium, plus the JavaScript syntax check, on pushes to main and pull requests. You can also start it manually from the Actions tab. Failed runs include a downloadable report with test results, screenshots and traces. Tests use local media and simulated YouTube APIs, without relying on external services.
+
+To run the same automation locally, use Node.js 24:
+
+```sh
+npm ci
+npx playwright install chromium
+npm test
+```
+
+These are development-only tools; installing or using the component still requires only its JavaScript and CSS files.
+
 ## Compatibility and troubleshooting
 
 Requires modern Custom Elements, AbortController event listeners, CSS size containers and cqw/cqh units. Real full screen depends on browser/device/embedding permissions. Native controls and codecs depend on the browser.
