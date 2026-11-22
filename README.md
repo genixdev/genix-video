@@ -142,7 +142,7 @@ A second muted copy covers the background, with the same blur/dimming settings a
 
 The second player is created only after the main video actually starts. It follows pause, resume, buffering and completion, and is released on close/reset, main-player failure or disconnect. If the background loads late, it respects the latest playback state. The poster stays underneath while loading or buffering; an unavailable or blocked background falls back to the poster without failing the main video. Pausing keeps the last available frame. Background failures are retried after reset and a new activation.
 
-Synchronization is approximate, without continuous polling. Native seek/rate changes are followed; YouTube adjusts on resumed playback, but its independent loading, ads and policies can produce different pictures. Both YouTube players share the same API script. The background copy loops while the main video is active; it stops when the foreground stops. This mode increases decoding, bandwidth and battery use. Use background="poster" for the lighter alternative. When foreground and container ratios match, there may be no visible background margin.
+Synchronization is approximate, without continuous polling. Native seek/rate changes are followed; YouTube adjusts on resumed playback, but its independent loading, ads and policies can produce different pictures. Both YouTube players share the same API script. The background copy loops while the main video is active; it stops when the foreground stops. When foreground and container ratios match, there may be no visible background margin.
 
 ### Playback and loading
 
@@ -268,11 +268,11 @@ Attributes take precedence over equivalent variables. --gv-attr-*, --gv-ratio, -
 
 Open tests/index.html through HTTP and click Run tests. Tests use native sample files; the policy-rejection and cookie-read cases are explicitly simulated. They do not create real cookies. If Node.js is available, npm run check validates the runtime syntax; npm install is unnecessary. Browser tests provide behavioral coverage, not just syntax checks.
 
-Manually verify Play/pause/reset, close during loading, retry after a bad URL, reconnect, keyboard focus, full screen, mobile sizing and YouTube network behavior. The latest local browser run passed all 49 tests. Real YouTube playback, moving backgrounds, thumbnail selection, close, full screen and PHP integration have also been checked locally; physical devices, Safari and Firefox remain unverified. Sample sources, edits and licenses are documented in [examples/assets/README.md](examples/assets/README.md).
+Manually verify Play/pause/reset, close during loading, retry after a bad URL, reconnect, keyboard focus, full screen, mobile sizing and YouTube network behavior. Sample sources, edits and licenses are documented in [examples/assets/README.md](examples/assets/README.md).
 
 ## Compatibility and troubleshooting
 
-Requires modern Custom Elements, AbortController event listeners, CSS size containers and cqw/cqh units. Real full screen depends on browser/device/embedding permissions. Native controls and codecs depend on the browser. Physical mobile devices, Safari and Firefox require separate validation; a resized desktop window is not equivalent.
+Requires modern Custom Elements, AbortController event listeners, CSS size containers and cqw/cqh units. Real full screen depends on browser/device/embedding permissions. Native controls and codecs depend on the browser.
 
 - No blur visible: use background=poster and a box ratio that leaves space around the contained player.
 - Unexpected height: fullwidth fills its parent; use max-height and inspect the parent's width. A header is not measured automatically.
