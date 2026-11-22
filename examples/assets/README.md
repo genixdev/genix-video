@@ -1,20 +1,59 @@
-# Local native samples
+# Demo media credits and licenses
 
-These generated test charts contain no third-party source footage. The white border helps detect cropping. All samples are silent H.264 videos with a fast-start MP4 container and a JPEG poster taken from the first frame.
+Media licenses are separate from the component's software license. Keep this document with the videos and posters when redistributing them. The credits below also apply to the extracted JPEG posters.
 
-- sample.mp4: 1280 × 720, 12 seconds.
-- portrait.mp4: 360 × 640, 6 seconds.
-- square.mp4: 640 × 640, 6 seconds.
+## Coast: sample.mp4 and square.mp4
 
-To regenerate, install FFmpeg and run the following commands from this directory. FFmpeg is an authoring tool, not a runtime dependency.
+**Ocean Coast Aerial 4k**, video courtesy of **Dareful**.
 
-```sh
-ffmpeg -f lavfi -i "testsrc2=size=360x640:rate=24" -t 6 -vf "drawbox=x=8:y=8:w=iw-16:h=ih-16:color=white:t=4" -c:v libx264 -preset medium -crf 28 -pix_fmt yuv420p -movflags +faststart -an portrait.mp4
-ffmpeg -i portrait.mp4 -frames:v 1 -q:v 2 portrait-poster.jpg
-ffmpeg -f lavfi -i "testsrc2=size=640x640:rate=24" -t 6 -vf "drawbox=x=8:y=8:w=iw-16:h=ih-16:color=white:t=4" -c:v libx264 -preset medium -crf 28 -pix_fmt yuv420p -movflags +faststart -an square.mp4
-ffmpeg -i square.mp4 -frames:v 1 -q:v 2 square-poster.jpg
-ffmpeg -f lavfi -i "testsrc2=size=1280x720:rate=24" -t 12 -vf "drawbox=x=12:y=12:w=iw-24:h=ih-24:color=white:t=6" -c:v libx264 -preset medium -crf 28 -pix_fmt yuv420p -movflags +faststart -an sample.mp4
-ffmpeg -i sample.mp4 -frames:v 1 -q:v 2 sample-poster.jpg
-```
+- Source: https://dareful.com/ocean-coast-aerial/
+- License: Creative Commons Attribution 4.0 International (CC BY 4.0).
+- License terms: https://creativecommons.org/licenses/by/4.0/
+- Source download: the 1920 x 1080 HLS rendition linked from the source page. Despite the title, the available download is Full HD, not 4K.
 
-The YouTube demo is embedded remotely; its video and thumbnail are not included as owned assets. Third-party rights remain with their respective holders.
+Adaptations for gennix-video:
+
+- sample.mp4: first 12 seconds, 1920 x 1080, re-encoded as silent H.264, 30 fps, fast-start MP4.
+- square.mp4: first 6 seconds, centered square crop, resized to 640 x 640, same encoding settings.
+- sample-poster.jpg and square-poster.jpg: first frame of each adapted clip, exported as JPEG.
+
+These adaptations are distributed under CC BY 4.0. Preserve the source and license links, credit Dareful, and identify further modifications. No endorsement is implied.
+
+### YouTube description for the horizontal sample
+
+Ocean Coast Aerial 4k — video courtesy of Dareful.
+Source: https://dareful.com/ocean-coast-aerial/
+License: CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/
+Edited for the gennix-video demo: first 12 seconds, re-encoded at 1920 x 1080 and 30 fps without audio. No endorsement is implied.
+
+## Waterfall: portrait.mp4 and portrait-poster.jpg
+
+**Snoqualmie Falls (2020-12-24)** by **Steven Pavlov**.
+
+- Source: https://commons.wikimedia.org/wiki/File:2020-12-24,_Snoqualmie_Falls,_video1.webm
+- Original: https://upload.wikimedia.org/wikipedia/commons/a/ad/2020-12-24%2C_Snoqualmie_Falls%2C_video1.webm
+- License: CC BY-SA 4.0 — https://creativecommons.org/licenses/by-sa/4.0/
+- Original dimensions/duration: 2160 x 3840, approximately 16 seconds.
+
+Adaptations for gennix-video:
+
+- portrait.mp4: first 6 seconds, resized without cropping from 2160 x 3840 to 1080 x 1920; re-encoded as silent H.264, 24 fps, fast-start MP4.
+- portrait-poster.jpg: first frame of the adapted clip, exported as a 1080 x 1920 JPEG.
+
+Both adaptations are distributed under **CC BY-SA 4.0**. Credit Steven Pavlov, retain the source and license links, and identify further modifications. Adapted versions of this video and poster must use CC BY-SA 4.0 or a compatible license. No endorsement is implied.
+
+### YouTube description for the vertical sample
+
+Snoqualmie Falls (2020-12-24) — Steven Pavlov.
+Source: https://commons.wikimedia.org/wiki/File:2020-12-24,_Snoqualmie_Falls,_video1.webm
+License: CC BY-SA 4.0 — https://creativecommons.org/licenses/by-sa/4.0/
+Edited for the gennix-video demo: first 6 seconds, resized without cropping to 1080 x 1920, re-encoded at 24 fps and audio removed. This adaptation remains licensed under CC BY-SA 4.0. No endorsement is implied.
+
+## YouTube examples
+
+The examples use uploads on genixdev's YouTube channel:
+
+- Coast: https://youtu.be/h5D-Meb4u7g
+- Vertical waterfall: https://youtube.com/shorts/Ez8aBI8yl6U
+
+These uploads do not change the underlying media licenses. Preserve the source credits and applicable license in each YouTube description. The adaptation details above describe the local MP4 and JPEG files; if a YouTube upload uses a different cut, its description should state its actual edits.

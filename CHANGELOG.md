@@ -1,6 +1,14 @@
 # Changelog
 
-## Unreleased
+## 1.0.0 — 2026-11-22
+
+First public release. Includes the complete component, configuration guide and browser tests.
+
+- Add genixdev branding, contact links, favicon and page metadata to the examples.
+
+- License the software under MIT and add English source headers with project and license links.
+- Replace client YouTube references with genixdev's coast and waterfall uploads; add a vertical YouTube background example.
+- Replace native demo media with credited nature footage under CC BY 4.0 and CC BY-SA 4.0.
 
 - Add optional background="video" for native and YouTube playback, with a muted decorative copy, coordinated lifecycle and static-poster fallback.
 

@@ -1,10 +1,14 @@
 # gennix-video
 
-Version **0.1.0**. A dependency-free custom element for YouTube and native video: full-width posters, centered uncropped playback and an optional blurred background. One JavaScript file and one stylesheet; no build step, framework, provider system or plugins.
+Version **1.0.0**. A dependency-free custom element for YouTube and native video: full-width posters, centered uncropped playback and an optional blurred background. One JavaScript file and one stylesheet; no build step, framework, provider system or plugins.
 
-**All rights reserved.** See [LICENSE](LICENSE). This repository does not grant an open-source license. Nothing has been published to a package registry or CDN.
+[Live demo](https://gennix-video.genixdev.com/) · [Configuration guide](https://gennix-video.genixdev.com/examples/) · [Download v1.0.0](https://github.com/genixdev/gennix-video/releases/tag/v1.0.0) · [Built by genixdev](https://genixdev.com/)
+
+**MIT licensed.** See [LICENSE](LICENSE). Demo videos and posters have separate [media licenses and credits](examples/assets/README.md). Nothing has been published to a package registry or CDN.
 
 ## Quick start
+
+Download the release or clone this repository. The examples and tests are optional; the component only needs the two files in `src/` and its license notice.
 
 Copy `src/gennix-video.js` and `src/gennix-video.css` to your web server. Add these tags to your page, adjusting paths to your installation:
 
@@ -18,7 +22,7 @@ Then add a video:
 ```html
 <gennix-video size="fullwidth" aspect-ratio="16/9"
   max-height="80dvh" background="poster"
-  provider="youtube" src="HuACikeyg0c">
+  provider="youtube" src="h5D-Meb4u7g">
 </gennix-video>
 ```
 
@@ -40,6 +44,7 @@ For a native file:
 - [Height limits](https://gennix-video.genixdev.com/examples/height-limit.html) and [viewport with a header](https://gennix-video.genixdev.com/examples/viewport.html)
 - [Languages and existing site cookies](https://gennix-video.genixdev.com/examples/languages.html)
 - [Explicit autoplay](https://gennix-video.genixdev.com/examples/autoplay.html)
+- [Moving video backgrounds, including vertical YouTube](https://gennix-video.genixdev.com/examples/video-background.html)
 - [Minimal HTML](https://gennix-video.genixdev.com/examples/minimal.html) and [escaped PHP integration](https://gennix-video.genixdev.com/examples/integration.php)
 - [Browser tests](https://gennix-video.genixdev.com/tests/)
 
@@ -102,10 +107,10 @@ Fullwidth height is width × ratio denominator ÷ numerator: 1920px at 16/9 give
 
 ```html
 <gennix-video size="custom" width="900" height="500"
-  provider="youtube" src="HuACikeyg0c" background="poster"></gennix-video>
+  provider="youtube" src="h5D-Meb4u7g" background="poster"></gennix-video>
 
 <gennix-video size="viewport" viewport-offset="80"
-  provider="youtube" src="HuACikeyg0c"></gennix-video>
+  provider="youtube" src="h5D-Meb4u7g"></gennix-video>
 ```
 
 Custom width shrinks to fit its parent, but a fixed height stays fixed. Use height=auto for a ratio-derived height. Fullwidth ignores legacy width/height CSS limits unless the explicit max-height attribute is present. Real full screen overrides size limits.
@@ -118,14 +123,18 @@ The close × overlays the container and **does not reserve top space or reduce p
 
 ### Moving video background
 
-Use `background="video"` with either provider. [Open the video-background examples](examples/video-background.html).
+Use `background="video"` with either provider. [Open the live video-background examples](https://gennix-video.genixdev.com/examples/video-background.html) or inspect their [HTML source](examples/video-background.html).
 
 ```html
 <gennix-video size="fullwidth" aspect-ratio="16/9" max-height="60dvh"
-  provider="youtube" src="HuACikeyg0c" background="video"></gennix-video>
+  provider="youtube" src="h5D-Meb4u7g" background="video"></gennix-video>
 
 <gennix-video size="custom" width="100%" height="420"
   provider="native" src="video.mp4" poster="poster.jpg"
+  background="video"></gennix-video>
+
+<gennix-video size="custom" width="100%" height="420" aspect-ratio="9/16"
+  provider="youtube" src="https://youtube.com/shorts/Ez8aBI8yl6U"
   background="video"></gennix-video>
 ```
 
@@ -160,7 +169,7 @@ The element reuses this button without replacing its children. Its content and a
 ## Languages and existing cookies
 
 ```html
-<gennix-video lang-cookie="SETLANG" provider="youtube" src="HuACikeyg0c"
+<gennix-video lang-cookie="SETLANG" provider="youtube" src="h5D-Meb4u7g"
   playlabel="Watch video" playlabel-en="Play" playlabel-es="Reproducir"
   playlabel-fr="Lire" playlabel-it="Riproduci" playlabel-de="Abspielen">
 </gennix-video>
@@ -259,7 +268,7 @@ Attributes take precedence over equivalent variables. --gv-attr-*, --gv-ratio, -
 
 Open tests/index.html through HTTP and click Run tests. Tests use native sample files; the policy-rejection and cookie-read cases are explicitly simulated. They do not create real cookies. If Node.js is available, npm run check validates the runtime syntax; npm install is unnecessary. Browser tests provide behavioral coverage, not just syntax checks.
 
-Manually verify Play/pause/reset, close during loading, retry after a bad URL, reconnect, keyboard focus, full screen, mobile sizing and YouTube network behavior. The latest local browser run passed all 49 tests. Real YouTube playback, moving backgrounds, thumbnail selection, close, full screen and PHP integration have also been checked locally; physical devices, Safari and Firefox remain unverified. Local sample generation commands are in [examples/assets/README.md](examples/assets/README.md).
+Manually verify Play/pause/reset, close during loading, retry after a bad URL, reconnect, keyboard focus, full screen, mobile sizing and YouTube network behavior. The latest local browser run passed all 49 tests. Real YouTube playback, moving backgrounds, thumbnail selection, close, full screen and PHP integration have also been checked locally; physical devices, Safari and Firefox remain unverified. Sample sources, edits and licenses are documented in [examples/assets/README.md](examples/assets/README.md).
 
 ## Compatibility and troubleshooting
 
@@ -272,6 +281,16 @@ Requires modern Custom Elements, AbortController event listeners, CSS size conta
 - No autoplay: try muted=true; keep a manual activation path.
 - Keep the referrer policy compatible with YouTube. Do not strip all referrer information from embeds.
 
-## Rights and release status
+## Custom integration
 
-All rights reserved. No MIT or other open-source permission is granted. Third-party media, trademarks and services retain their respective rights. The embedded YouTube video is a demonstration, not an included or licensed asset. Source is maintained in [genixdev/gennix-video](https://github.com/genixdev/gennix-video); the [public demo](https://gennix-video.genixdev.com/examples/) is hosted separately. No package or CDN release has been published.
+Built by [genixdev](https://genixdev.com/), an independent web developer. Need this component integrated into your website, or a custom web project? [Visit genixdev.com to get in touch](https://genixdev.com/).
+
+## License and releases
+
+The component source, example code and documentation are available under the [MIT License](LICENSE), copyright (c) 2026 genixdev. You may use, modify and redistribute the software, including commercially, while preserving the copyright and license notice.
+
+Demo media are licensed separately: the coast video and its posters use **CC BY 4.0** (Dareful); the waterfall video and its poster use **CC BY-SA 4.0** (Steven Pavlov). Keep the [media credits, source links and license notices](examples/assets/README.md) with redistributed media. The software license does not relicense these videos or posters.
+
+YouTube examples use the project's [coast upload](https://youtu.be/h5D-Meb4u7g) and [vertical waterfall upload](https://youtube.com/shorts/Ez8aBI8yl6U). For vertical YouTube playback, specify `aspect-ratio="9/16"`; the Shorts URL is accepted directly.
+
+Source is maintained in [genixdev/gennix-video](https://github.com/genixdev/gennix-video); the [public demo](https://gennix-video.genixdev.com/examples/) is hosted separately and may not yet reflect the latest repository changes. No package or CDN release has been published. The package remains marked private to prevent accidental registry publication.

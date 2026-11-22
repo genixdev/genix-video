@@ -1,4 +1,12 @@
-/* Component selectors are scoped to gennix-video. */
+/*!
+ * gennix-video — Video layout, poster backgrounds and accessible controls.
+ * Component selectors are scoped to gennix-video; demo styles use gv-demo classes.
+ * Copyright (c) 2026 genixdev
+ * https://genixdev.com
+ * https://github.com/genixdev/gennix-video
+ * SPDX-License-Identifier: MIT
+ * See the LICENSE file in the repository root for the full license text.
+ */
 gennix-video {
   display: block;
   position: relative;
@@ -263,6 +271,7 @@ gennix-video[data-gv-active] .gv-status {
 .gv-demo .gv-demo-checks li { border-top: 1px solid #b9c2b1; padding-top: 1rem; line-height: 1.6; color: #586368; }
 .gv-demo .gv-demo-checks strong { display: block; color: #1e292d; margin-bottom: .4rem; }
 .gv-demo .gv-demo-footer { padding: 1.5rem 4vw; border-top: 1px solid #d9dcd3; display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: .85rem; }
+.gv-demo .gv-demo-contact { flex-basis: 100%; margin: 0; font-size: 1rem; }
 .gv-demo .gv-demo-tools { display: flex; flex-wrap: wrap; gap: .6rem; margin: 1rem 0; }
 .gv-demo .gv-demo-tools button, .gv-demo .gv-demo-tools select { padding: .7rem 1rem; border: 1px solid #a5b19c; border-radius: .4rem; background: #fff; color: #1e292d; font: inherit; cursor: pointer; }
 .gv-demo .gv-demo-tools button:hover { background: #e3f5a4; }

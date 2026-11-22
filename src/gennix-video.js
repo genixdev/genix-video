@@ -1,4 +1,12 @@
-/* gennix-video — 0.1.0. No runtime dependencies. All rights reserved. */
+/*!
+ * gennix-video — Dependency-free YouTube and native video custom element.
+ * Handles lazy loading, playback, sizing, backgrounds and translated controls.
+ * Copyright (c) 2026 genixdev
+ * https://genixdev.com
+ * https://github.com/genixdev/gennix-video
+ * SPDX-License-Identifier: MIT
+ * See the LICENSE file in the repository root for the full license text.
+ */
 (() => {
   'use strict';
   if (customElements.get('gennix-video')) return;

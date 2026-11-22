@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1">
   <title>gennix-video · Browser tests</title>
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="../src/gennix-video.css?v=video-background">
-  <script src="../src/gennix-video.js?v=video-background" defer></script>
+  <link rel="stylesheet" href="../src/gennix-video.css?v=1.0.0">
+  <script src="../src/gennix-video.js?v=1.0.0" defer></script>
 </head>
 <body class="gv-demo">
   <main class="gv-demo-section">
@@ -73,7 +74,7 @@
           results.append(row);
         };
         await test('Idle pause does not load YouTube; disconnected play rejects', async () => {
-          const video = create('youtube', 'HuACikeyg0c');
+          const video = create('youtube', 'h5D-Meb4u7g');
           video.pause();
           assert(video.state === 'idle' && !video.querySelector('iframe'), 'The player was activated.');
           assert(![...document.scripts].some(s => s.src.includes('youtube.com')), 'The API was loaded.');
@@ -286,17 +287,17 @@
           assert(video.state === 'playing', 'Did not recover after correcting configuration.');
         });
         await test('YouTube URL formats, times and explicit start priority', async () => {
-          for (const source of ['https://www.youtube.com/watch?v=HuACikeyg0c&t=1m30s', 'https://youtu.be/HuACikeyg0c?t=90', 'https://www.youtube.com/embed/HuACikeyg0c?start=90', 'https://youtube.com/shorts/HuACikeyg0c#t=90']) {
+          for (const source of ['https://www.youtube.com/watch?v=h5D-Meb4u7g&t=1m30s', 'https://youtu.be/h5D-Meb4u7g?t=90', 'https://www.youtube.com/embed/h5D-Meb4u7g?start=90', 'https://youtube.com/shorts/h5D-Meb4u7g#t=90']) {
             const video = create('youtube', source);
-            assert(video.state === 'idle' && video._src === 'HuACikeyg0c' && video._start === 90, 'Incorrect URL or time parsing.');
+            assert(video.state === 'idle' && video._src === 'h5D-Meb4u7g' && video._start === 90, 'Incorrect URL or time parsing.');
             video.remove();
           }
-          const explicit = create('youtube','https://youtu.be/HuACikeyg0c?t=90',{start:'0'});
+          const explicit = create('youtube','https://youtu.be/h5D-Meb4u7g?t=90',{start:'0'});
           assert(explicit._start === 0, 'Explicit start did not take priority.');
           assert(!document.querySelector('iframe'), 'Parsing a URL created an iframe.');
         });
         await test('Rejects deceptive hosts, invalid IDs and invalid times', async () => {
-          for (const source of ['https://youtube.com.ejemplo.org/watch?v=HuACikeyg0c','https://youtube.com@ejemplo.org/watch?v=HuACikeyg0c','javascript:alert(1)','https://youtu.be/incorrecto','https://youtube.com/watch?v=HuACikeyg0c&t=mal']) {
+          for (const source of ['https://youtube.com.ejemplo.org/watch?v=h5D-Meb4u7g','https://youtube.com@ejemplo.org/watch?v=h5D-Meb4u7g','javascript:alert(1)','https://youtu.be/incorrecto','https://youtube.com/watch?v=h5D-Meb4u7g&t=mal']) {
             const video = create('youtube',source);
             assert(video.state === 'error', 'Accepted an invalid source: ' + source);
             video.remove();
@@ -578,7 +579,7 @@
           }};
           let video;
           try {
-            video = create('youtube','HuACikeyg0c',{background:'video'});
+            video = create('youtube','h5D-Meb4u7g',{background:'video'});
             assert(players.length === 0, 'YouTube loaded before Play.');
             await video.play();
             assert(players.length === 2, 'Expected two players.');
@@ -616,7 +617,7 @@
         }
         await test('YouTube chooses max resolution once for both poster and background', async () => {
           await thumbnails([[1280,720]], async requests => {
-            const video = create('youtube','HuACikeyg0c',{poster:''});
+            const video = create('youtube','h5D-Meb4u7g',{poster:''});
             await until(() => !video._posterProbe);
             assert(requests.length === 1 && requests[0].endsWith('/maxresdefault.jpg'), 'Wrong first candidate.');
             assert(video.querySelector('.gv-background').style.backgroundImage.includes(requests[0]), 'Background differs.');
@@ -626,25 +627,25 @@
         });
         await test('Errors and small placeholders fall back in order and stop at a valid image', async () => {
           await thumbnails(['error',[120,90],[480,360]], async requests => {
-            const video = create('youtube','HuACikeyg0c',{poster:''});
+            const video = create('youtube','h5D-Meb4u7g',{poster:''});
             await until(() => !video._posterProbe);
             assert(requests.map(url => url.split('/').pop()).join(',') === 'maxresdefault.jpg,sddefault.jpg,hqdefault.jpg', 'Wrong fallback order.');
             assert(video.querySelector('.gv-poster').src === requests[2], 'Wrong final poster.');
           });
           await thumbnails([[120,90],[640,480]], async requests => {
-            const video = create('youtube','HuACikeyg0c',{poster:''});
+            const video = create('youtube','h5D-Meb4u7g',{poster:''});
             await until(() => !video._posterProbe);
             assert(requests.length === 2 && video.querySelector('.gv-poster').src.endsWith('/sddefault.jpg'), 'Did not stop at SD.');
           });
         });
         await test('Explicit posters bypass YouTube; complete thumbnail failure preserves Play', async () => {
           await thumbnails([[32,32]], async requests => {
-            const video = create('youtube','HuACikeyg0c');
+            const video = create('youtube','h5D-Meb4u7g');
             await until(() => !video._posterProbe);
             assert(requests.length === 1 && requests[0].endsWith('/sample-poster.jpg'), 'Explicit poster overridden.');
           });
           await thumbnails(['error','error','error'], async requests => {
-            const video = create('youtube','HuACikeyg0c',{poster:''});
+            const video = create('youtube','h5D-Meb4u7g',{poster:''});
             await until(() => !video._posterProbe);
             assert(requests.length === 3 && video.state === 'idle' && !video.querySelector('.gv-play').hidden, 'Image failures blocked playback.');
             assert(video.querySelector('.gv-poster').hidden && !video.querySelector('.gv-background').style.backgroundImage, 'Failed image remains visible.');
@@ -655,7 +656,7 @@
           const probes = [];
           window.Image = class { set src(url) { this.url = url; probes.push(this); } };
           try {
-            const video = create('youtube','HuACikeyg0c',{poster:''});
+            const video = create('youtube','h5D-Meb4u7g',{poster:''});
             const oldCallback = probes[0].onload;
             video.setAttribute('src','abcdefghijk'); video._configure();
             probes[0].naturalWidth = 1280; probes[0].naturalHeight = 720; oldCallback();
